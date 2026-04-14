@@ -1,0 +1,141 @@
+# Deploys to Azure App Service (Zip Deploy via SCM), not a VM.
+#
+# Publish profile (deployment auth):
+#   Add secret AZURE_WEBAPP_PUBLISH_PROFILE with the full .PublishSettings XML from Azure Portal:
+#   App Service (pawnect) → Overview → Get publish profile → paste entire file contents.
+#   Because the deploy job uses environment "Prod", define the secret under
+#   Settings → Environments → Prod → Environment secrets (or use a repository secret).
+#
+# Build uses local dotnet publish to a folder; deployment uses the publish profile above
+# (same credentials as "Zip Deploy" in Visual Studio), not the .pubxml files in the repo.
+name: PawNect Azure App Service CI/CD
+
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+env:
+  # Must match msdeploySite / App Service name in publish profile (e.g. pawnect.PublishSettings).
+  AZURE_WEBAPP_NAME: pawnect
+  DOTNET_VERSION: "10.0.x"
+  SOLUTION_PATH: "Project/PawNect.sln"
+  PETPARENT_PROJECT: "Project/Frontend/PawNect.PetParent.Web/PawNect.PetParent.Web.csproj"
+  ADMIN_PROJECT: "Project/Frontend/PawNect.AdminPortal.Web/PawNect.AdminPortal.Web.csproj"
+  API_PROJECT: "Project/Backend/PawNect.API/PawNect.API.csproj"
+  ARTIFACT_NAME: "pawnect-appservice-bundle"
+  PACKAGE_FILE: "pawnect-deployment.zip"
+
+jobs:
+  build-and-package:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore solution
+        run: dotnet restore "${{ env.SOLUTION_PATH }}"
+
+      - name: Build solution
+        run: dotnet build "${{ env.SOLUTION_PATH }}" --configuration Release --no-restore
+
+      - name: Publish PetParent.Web
+        run: dotnet publish "${{ env.PETPARENT_PROJECT }}" --configuration Release --no-build --output "${{ runner.temp }}/publish/petparent"
+
+      - name: Publish AdminPortal.Web
+        run: dotnet publish "${{ env.ADMIN_PROJECT }}" --configuration Release --no-build --output "${{ runner.temp }}/publish/admin"
+
+      - name: Publish API
+        run: dotnet publish "${{ env.API_PROJECT }}" --configuration Release --no-build --output "${{ runner.temp }}/publish/api"
+
+      # Layout: PetParent -> wwwroot (site root); admin -> wwwroot/admin; api -> wwwroot/api.
+      # Zip root = that wwwroot tree (Kudu zip deploy extracts this into the App Service wwwroot).
+      - name: Build unified deployment package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $base = Join-Path $env:RUNNER_TEMP 'publish'
+          $wwwroot = Join-Path $env:RUNNER_TEMP 'wwwroot'
+          New-Item -ItemType Directory -Force -Path $wwwroot | Out-Null
+
+          Copy-Item -Path (Join-Path $base 'petparent\*') -Destination $wwwroot -Recurse -Force
+
+          $admin = Join-Path $wwwroot 'admin'
+          New-Item -ItemType Directory -Force -Path $admin | Out-Null
+          Copy-Item -Path (Join-Path $base 'admin\*') -Destination $admin -Recurse -Force
+
+          $api = Join-Path $wwwroot 'api'
+          New-Item -ItemType Directory -Force -Path $api | Out-Null
+          Copy-Item -Path (Join-Path $base 'api\*') -Destination $api -Recurse -Force
+
+          $zipPath = Join-Path $env:RUNNER_TEMP $env:PACKAGE_FILE
+          Push-Location $wwwroot
+          try {
+            Compress-Archive -Path * -DestinationPath $zipPath -Force
+          } finally {
+            Pop-Location
+          }
+
+      - name: Upload deployment artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ runner.temp }}/${{ env.PACKAGE_FILE }}
+          if-no-files-found: error
+          retention-days: 1
+
+  deploy:
+    runs-on: windows-latest
+    needs: build-and-package
+    environment:
+      name: Prod
+
+    steps:
+      - name: Download deployment artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ runner.temp }}/deployment
+
+      - name: Deploy to Azure App Service (single package)
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ${{ runner.temp }}/deployment/${{ env.PACKAGE_FILE }}
+
+      - name: Delete GitHub artifact after deployment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const artifactName = process.env.ARTIFACT_NAME;
+            const { owner, repo } = context.repo;
+            const runId = context.runId;
+            const artifacts = await github.paginate(
+              github.rest.actions.listWorkflowRunArtifacts,
+              { owner, repo, run_id: runId, per_page: 100 }
+            );
+            const target = artifacts.find(a => a.name === artifactName);
+
+            if (!target) {
+              core.info(`Artifact '${artifactName}' not found. Nothing to delete.`);
+              return;
+            }
+
+            await github.rest.actions.deleteArtifact({
+              owner,
+              repo,
+              artifact_id: target.id
+            });
+            core.info(`Deleted artifact '${artifactName}' (id: ${target.id}).`);
