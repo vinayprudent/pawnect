@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PawNect – Pet Parent MVP Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --mint: #a2e8d6;
+      --teal: #167a77;
+      --soft-grey: #f5f7f8;
+      --charcoal: #1c262b;
+      --border: #dde3e7;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top left, #e8faf5 0, #f5f7f8 40%, #edf2f4 100%);
+      color:var(--charcoal);
+    }
+
+    .app {
+      max-width:1220px;
+      margin:0 auto;
+      padding:18px 18px 40px;
+    }
+
+    /* HEADER */
+    header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:14px;
+    }
+    .brand {
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .logo-circle {
+      width:42px;
+      height:42px;
+      border-radius:50%;
+      background:linear-gradient(135deg,var(--mint),var(--teal));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-weight:700;
+      font-size:20px;
+      box-shadow:0 8px 20px rgba(0,0,0,0.12);
+    }
+    .brand-text h1 {
+      font-size:22px;
+      font-weight:700;
+      color:var(--teal);
+    }
+    .brand-text span {
+      font-size:11px;
+      color:#6c7880;
+    }
+
+    .top-right {
+      display:flex;
+      gap:8px;
+      align-items:center;
+      font-size:12px;
+    }
+    .pill {
+      padding:6px 12px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,0.9);
+      backdrop-filter:blur(10px);
+    }
+
+    .pet-selector {
+      font-size:11px;
+      color:#6f7b84;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .pet-selector select {
+      font-size:11px;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#fff;
+    }
+
+    /* MAIN NAV */
+    .main-tabs {
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin:10px 0 16px;
+    }
+    .main-tab {
+      padding:8px 14px;
+      border-radius:999px;
+      border:1px solid transparent;
+      background:transparent;
+      color:#69767f;
+      font-size:13px;
+      cursor:pointer;
+    }
+    .main-tab.active {
+      background:var(--teal);
+      color:#fff;
+      border-color:var(--teal);
+      box-shadow:0 6px 14px rgba(22,122,119,0.3);
+    }
+
+    .panel {
+      display:none;
+      background:rgba(255,255,255,0.96);
+      border-radius:18px;
+      padding:18px 18px 20px;
+      box-shadow:0 18px 40px rgba(15,47,55,0.20);
+      min-height:430px;
+      border:1px solid rgba(215,226,230,0.8);
+    }
+    .panel.active { display:block; }
+
+    .panel-title {
+      font-size:18px;
+      font-weight:600;
+      margin-bottom:4px;
+    }
+    .panel-sub {
+      font-size:13px;
+      color:#7c8891;
+      margin-bottom:14px;
+    }
+
+    /* HOME – 4 ICONS */
+    .home-hero {
+      padding:28px 24px 24px;
+      border-radius:16px;
+      background:linear-gradient(135deg, #e5fbf5 0, #ffffff 45%, #dff4f0 100%);
+      text-align:center;
+      position:relative;
+      overflow:hidden;
+    }
+    .home-hero::after {
+      content:"";
+      position:absolute;
+      right:-40px;
+      top:-40px;
+      width:160px;
+      height:160px;
+      border-radius:50%;
+      background:radial-gradient(circle,var(--mint),var(--teal));
+      opacity:0.18;
+    }
+    .hero-title {
+      font-size:24px;
+      font-weight:700;
+      color:#12333a;
+      margin-bottom:6px;
+    }
+    .hero-sub {
+      font-size:13px;
+      color:#53616a;
+      margin-bottom:18px;
+      max-width:520px;
+      margin-inline:auto;
+    }
+    .badge {
+      display:inline-block;
+      font-size:10px;
+      padding:3px 7px;
+      border-radius:999px;
+      background:rgba(22,122,119,0.08);
+      color:#145a56;
+      margin-bottom:8px;
+    }
+    .quick-actions-home {
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:12px;
+      max-width:840px;
+      margin:0 auto;
+    }
+    .qa-card-home {
+      border-radius:14px;
+      border:1px solid rgba(207,224,227,0.9);
+      background:rgba(255,255,255,0.96);
+      padding:14px 10px;
+      cursor:pointer;
+      transition:0.15s;
+      box-shadow:0 4px 10px rgba(0,0,0,0.03);
+    }
+    .qa-card-home:hover {
+      border-color:var(--teal);
+      box-shadow:0 10px 24px rgba(22,122,119,0.20);
+      transform:translateY(-1px);
+    }
+    .qa-icon {
+      width:36px;
+      height:36px;
+      border-radius:50%;
+      background:rgba(22,122,119,0.09);
+      margin:0 auto 6px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:18px;
+    }
+    .qa-title {
+      font-size:13px;
+      font-weight:600;
+      margin-bottom:4px;
+    }
+    .qa-sub {
+      font-size:11px;
+      color:#6a757e;
+    }
+    .home-note {
+      font-size:11px;
+      color:#6f7b84;
+      margin-top:12px;
+    }
+
+    /* GENERIC */
+    .two-col {
+      display:grid;
+      grid-template-columns:minmax(0,1.1fr) minmax(0,1.1fr);
+      gap:14px;
+    }
+    .card {
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:#f9fbfb;
+      padding:12px;
+      font-size:12px;
+    }
+    .card h3 {
+      font-size:14px;
+      margin-bottom:4px;
+      color:#1d2a30;
+    }
+
+    .label {
+      font-size:11px;
+      text-transform:uppercase;
+      color:#8a969f;
+      margin-bottom:4px;
+    }
+    .list {
+      margin-left:14px;
+      margin-top:4px;
+    }
+    .list li { margin-bottom:4px; }
+
+    .stepper {
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-bottom:10px;
+      font-size:11px;
+    }
+    .step-pill {
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid #d0d7dd;
+      color:#7a878f;
+      background:#ffffff;
+    }
+    .step-pill.active {
+      background:var(--teal);
+      border-color:var(--teal);
+      color:#fff;
+      box-shadow:0 6px 14px rgba(22,122,119,0.35);
+    }
+
+    .filter-pill {
+      display:inline-block;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#fff;
+      font-size:11px;
+      margin:2px 2px 4px;
+      cursor:pointer;
+    }
+
+    /* LISTING / PRACTO STYLE */
+    .clinic-layout {
+      display:grid;
+      grid-template-columns:260px minmax(0,1.7fr) minmax(0,1.1fr);
+      gap:14px;
+      align-items:flex-start;
+    }
+    .filter-card {
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:#f9fbfb;
+      padding:10px;
+      font-size:12px;
+    }
+    .filter-heading {
+      font-size:13px;
+      font-weight:600;
+      margin-bottom:6px;
+    }
+    .listing-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:8px;
+    }
+    .listing-meta {
+      font-size:12px;
+      color:#6f7b84;
+    }
+    .sort-row {
+      font-size:11px;
+      color:#6d7a83;
+    }
+    .sort-row span {
+      margin-right:6px;
+      cursor:pointer;
+    }
+    .sort-row span.active {
+      color:var(--teal);
+      font-weight:600;
+    }
+
+    .vet-list { margin-top:6px; }
+    .vet-card {
+      background:#ffffff;
+      border-radius:12px;
+      border:1px solid var(--border);
+      padding:10px 12px;
+      margin-bottom:10px;
+      cursor:pointer;
+      box-shadow:0 4px 10px rgba(0,0,0,0.03);
+      transition:0.12s;
+    }
+    .vet-card:hover {
+      border-color:var(--teal);
+      box-shadow:0 6px 16px rgba(22,122,119,0.20);
+    }
+    .vet-card.active {
+      border-color:var(--teal);
+      box-shadow:0 8px 20px rgba(22,122,119,0.35);
+    }
+    .vet-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:8px;
+    }
+    .vet-name {
+      font-size:14px;
+      font-weight:600;
+    }
+    .vet-qual {
+      font-size:11px;
+      color:#6c7880;
+      margin-top:2px;
+    }
+    .vet-meta {
+      font-size:11px;
+      color:#7a858e;
+      margin-top:2px;
+    }
+    .rating {
+      font-size:12px;
+      margin-top:2px;
+      color:#f6a500;
+    }
+    .fee {
+      font-size:11px;
+      color:#4b5860;
+      margin-top:2px;
+      text-align:right;
+    }
+    .chip {
+      display:inline-block;
+      font-size:11px;
+      padding:2px 6px;
+      border-radius:999px;
+      background:#edf3f6;
+      margin-top:4px;
+      margin-right:4px;
+    }
+    .highlight-line {
+      font-size:11px;
+      color:#4b5860;
+      margin-top:6px;
+    }
+    .review-snippet {
+      font-size:11px;
+      color:#5f6a72;
+      margin-top:4px;
+      font-style:italic;
+    }
+    .timing-row {
+      font-size:11px;
+      color:#5e6a72;
+      margin-top:4px;
+    }
+    .edu-row {
+      font-size:11px;
+      color:#5e6a72;
+      margin-top:2px;
+    }
+    .btn-row {
+      display:flex;
+      gap:6px;
+      margin-top:8px;
+    }
+    .btn-sm {
+      flex:1;
+      font-size:11px;
+      padding:6px 8px;
+      border-radius:999px;
+      border:1px solid var(--teal);
+      background:#fff;
+      color:var(--teal);
+      cursor:pointer;
+      text-align:center;
+    }
+    .btn-sm.primary {
+      background:var(--teal);
+      color:#fff;
+      box-shadow:0 6px 14px rgba(22,122,119,0.35);
+    }
+    .btn-sm.muted {
+      border-color:#b6c2c9;
+      color:#5e6a72;
+    }
+
+    .doc-profile {
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:#f9fbfb;
+      padding:10px;
+      font-size:12px;
+    }
+    .doc-profile h3 {
+      font-size:14px;
+      margin-bottom:2px;
+    }
+    .doc-role {
+      font-size:11px;
+      color:#6f7b84;
+      margin-bottom:4px;
+    }
+    .doc-rating {
+      font-size:12px;
+      color:#f6a500;
+      margin-top:2px;
+    }
+    .doc-tags { margin-top:4px; }
+    .doc-desc {
+      font-size:11px;
+      color:#5f6a72;
+      margin-top:6px;
+    }
+    .slot-table { margin-top:10px; }
+    .slot-row {
+      display:flex;
+      gap:6px;
+      margin-bottom:6px;
+      align-items:center;
+    }
+    .slot-day {
+      width:70px;
+      font-size:11px;
+      color:#6f7b84;
+    }
+    .slot-pill {
+      padding:4px 7px;
+      border-radius:8px;
+      border:1px solid #c7d0d7;
+      font-size:10px;
+      cursor:pointer;
+      background:#fff;
+    }
+    .slot-pill.selected {
+      background:var(--mint);
+      border-color:var(--teal);
+      color:#0f4b49;
+      font-weight:600;
+    }
+    .booking-summary {
+      margin-top:10px;
+      font-size:11px;
+      color:#4b5860;
+    }
+    .cta-row {
+      margin-top:10px;
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+    }
+    .btn-main {
+      padding:8px 14px;
+      border-radius:999px;
+      border:none;
+      background:var(--teal);
+      color:#fff;
+      font-size:13px;
+      cursor:pointer;
+      box-shadow:0 8px 18px rgba(22,122,119,0.45);
+    }
+    .btn-ghost {
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#fff;
+      font-size:12px;
+      cursor:pointer;
+      color:#4d5a63;
+    }
+
+    /* SERVICES */
+    .services-grid {
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+    }
+    .service-card {
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:#ffffff;
+      padding:12px;
+      font-size:12px;
+      box-shadow:0 6px 14px rgba(0,0,0,0.05);
+    }
+    .service-tag {
+      display:inline-block;
+      font-size:10px;
+      padding:3px 7px;
+      border-radius:999px;
+      background:rgba(162,232,214,0.2);
+      color:#145a56;
+      margin-bottom:6px;
+    }
+    .service-title {
+      font-size:14px;
+      font-weight:600;
+      margin-bottom:4px;
+    }
+    .service-sub {
+      font-size:11px;
+      color:#5e6a72;
+      margin-bottom:6px;
+    }
+
+    /* RECORDS */
+    .records-layout {
+      display:grid;
+      grid-template-columns:minmax(0,1.1fr) minmax(0,1.1fr);
+      gap:14px;
+    }
+    .record-row {
+      display:flex;
+      justify-content:space-between;
+      font-size:11px;
+      border-bottom:1px dashed #dde3e7;
+      padding:4px 0;
+    }
+    .record-row span:nth-child(1) { font-weight:500; }
+    .record-pill {
+      display:inline-block;
+      font-size:10px;
+      padding:3px 6px;
+      border-radius:999px;
+      background:#edf3f6;
+      margin-left:4px;
+    }
+
+    /* MODAL – VIDEO SLOT PICKER */
+    .modal-backdrop {
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:50;
+    }
+    .modal {
+      width:100%;
+      max-width:520px;
+      background:#ffffff;
+      border-radius:16px;
+      padding:16px 16px 14px;
+      box-shadow:0 24px 60px rgba(0,0,0,0.35);
+      border:1px solid var(--border);
+      position:relative;
+      max-height:80vh;
+      overflow:auto;
+    }
+    .modal-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      margin-bottom:8px;
+    }
+    .modal-title {
+      font-size:15px;
+      font-weight:600;
+    }
+    .modal-close {
+      border:none;
+      background:transparent;
+      cursor:pointer;
+      font-size:18px;
+      line-height:1;
+      color:#8b979f;
+    }
+    .modal-sub {
+      font-size:11px;
+      color:#6f7b84;
+      margin-bottom:6px;
+    }
+    .video-chip {
+      display:inline-block;
+      font-size:11px;
+      padding:3px 8px;
+      border-radius:999px;
+      background:rgba(22,122,119,0.08);
+      color:#145a56;
+      margin-bottom:6px;
+    }
+    .modal-summary {
+      font-size:12px;
+      margin-top:6px;
+      color:#4b5860;
+    }
+    .modal-footer {
+      margin-top:10px;
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+      font-size:12px;
+    }
+
+    @media(max-width:1100px) {
+      .clinic-layout {
+        grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+      }
+    }
+    @media(max-width:900px) {
+      .two-col,
+      .records-layout {
+        grid-template-columns:minmax(0,1fr);
+      }
+      .clinic-layout {
+        grid-template-columns:minmax(0,1fr);
+      }
+      .quick-actions-home {
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+      .services-grid {
+        grid-template-columns:minmax(0,1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <div class="logo-circle">P</div>
+      <div class="brand-text">
+        <h1>PawNect</h1>
+        <span>Connecting Every Paw to Care</span>
+      </div>
+    </div>
+    <div class="top-right">
+      <div class="pill">Pet Parent &amp; Caretaker MVP</div>
+      <div class="pet-selector">
+        Pet:
+        <select id="globalPetSelect">
+          <option>Lucy (Dog)</option>
+          <option>Zoey (Cat)</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN NAV -->
+  <div class="main-tabs">
+    <button class="main-tab active" data-panel="home-panel">Home</button>
+    <button class="main-tab" data-panel="online-panel">Online consult</button>
+    <button class="main-tab" data-panel="clinic-panel">In-clinic visit</button>
+    <button class="main-tab" data-panel="lab-panel">Lab tests &amp; home collection</button>
+    <button class="main-tab" data-panel="homevisit-panel">Home / on-spot visit</button>
+    <button class="main-tab" data-panel="services-panel">Connected services</button>
+    <button class="main-tab" data-panel="records-panel">My records</button>
+  </div>
+
+  <!-- HOME PANEL -->
+  <section id="home-panel" class="panel active">
+    <div class="panel-title">Home</div>
+    <div class="panel-sub">Clean, 4-tile Practo-style entry screen.</div>
+
+    <div class="home-hero">
+      <span class="badge">MVP – Pet Parent Interface</span>
+      <div class="hero-title">Everything your pet needs, in one place.</div>
+      <div class="hero-sub">
+        Book online consults, clinic visits, lab tests or home/spot care for pets &amp; community animals – with records and services connected.
+      </div>
+
+      <div class="quick-actions-home">
+        <div class="qa-card-home" data-goto="online-panel">
+          <div class="qa-icon">📹</div>
+          <div class="qa-title">Online consultation</div>
+          <div class="qa-sub">Video call with a verified vet.</div>
+        </div>
+        <div class="qa-card-home" data-goto="clinic-panel">
+          <div class="qa-icon">🏥</div>
+          <div class="qa-title">In-clinic appointment</div>
+          <div class="qa-sub">Find nearby vets &amp; clinics.</div>
+        </div>
+        <div class="qa-card-home" data-goto="homevisit-panel">
+          <div class="qa-icon">🏠</div>
+          <div class="qa-title">Home / on-spot visit</div>
+          <div class="qa-sub">For pets or strays that can’t travel.</div>
+        </div>
+        <div class="qa-card-home" data-goto="lab-panel">
+          <div class="qa-icon">🧪</div>
+          <div class="qa-title">Lab tests</div>
+          <div class="qa-sub">Home collection &amp; digital reports.</div>
+        </div>
+      </div>
+
+      <div class="home-note">
+        Start from any of the four tiles – the rest of the journey feels familiar, like a Practo interface for pets.
+      </div>
+    </div>
+  </section>
+
+  <!-- ONLINE CONSULT PANEL -->
+  <section id="online-panel" class="panel">
+    <div class="panel-title">Online consultation</div>
+    <div class="panel-sub">
+      Practo-style video consult journey – pet selection, symptoms, detailed doctor cards and a slot picker.
+    </div>
+
+    <div class="stepper">
+      <span class="step-pill active">1. Select pet &amp; symptoms</span>
+      <span class="step-pill active">2. View recommended vets</span>
+      <span class="step-pill active">3. Choose video slot</span>
+      <span class="step-pill">4. Pay &amp; join consult</span>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="label">Step 1 – Select pet</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <p><strong>Lucy</strong> – Dog • 8 yrs • CKD care</p>
+          <div class="pet-selector">
+            Pet:
+            <select>
+              <option>Lucy (Dog)</option>
+              <option>Zoey (Cat)</option>
+            </select>
+          </div>
+        </div>
+        <p style="font-size:11px;color:#6c7880;margin-top:2px;">
+          The vet sees past visits, medications and lab reports before the video call.
+        </p>
+
+        <div class="label" style="margin-top:10px;">Chief complaints</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <span class="filter-pill">Reduced appetite</span>
+          <span class="filter-pill">Increased thirst</span>
+          <span class="filter-pill">Vomiting</span>
+          <span class="filter-pill">Lethargy</span>
+        </div>
+
+        <div class="label" style="margin-top:10px;">Additional notes (optional)</div>
+        <textarea rows="3" style="width:100%;border-radius:10px;border:1px solid var(--border);font-size:12px;padding:6px;"
+          placeholder="Add anything else you want the vet to know..."></textarea>
+      </div>
+
+      <div class="card">
+        <div class="label">Step 2 – Recommended vets for video consult</div>
+        <div class="vet-list">
+          <!-- Dr Dave -->
+          <div class="vet-card" id="online-dave-card">
+            <div class="vet-header">
+              <div>
+                <div class="vet-name">Dr. Vikram Dave</div>
+                <div class="vet-qual">BVSc &amp; AH, M.V.Sc (Medicine)</div>
+                <div class="vet-meta">18 yrs experience • Andheri (W)</div>
+                <div class="rating">★★★★★ 4.9 (320 reviews)</div>
+                <div class="edu-row">Education: Bombay Veterinary College • Internal Medicine</div>
+                <div class="timing-row">Today: 4:00 PM – 7:00 PM • Tomorrow: 10:00 AM – 12:30 PM</div>
+                <span class="chip">Internal medicine</span><span class="chip">Kidney care</span>
+              </div>
+              <div class="fee">
+                Video consult<br><strong>₹800</strong><br>
+                <span style="font-size:10px;color:#7c8891;">15–20 mins</span>
+              </div>
+            </div>
+            <div class="highlight-line">
+              “Helps pet parents understand long-term disease, diet and lifestyle changes.”
+            </div>
+            <div class="review-snippet">
+              “We’ve been consulting Dr. Dave online for Lucy’s CKD – very structured, clear and reassuring.”
+            </div>
+            <div class="btn-row">
+              <div class="btn-sm">View profile</div>
+              <div class="btn-sm primary" id="openVideoModal">View video slots</div>
+            </div>
+          </div>
+
+          <!-- Other vets -->
+          <div class="vet-card">
+            <div class="vet-header">
+              <div>
+                <div class="vet-name">Dr. R. Mehta</div>
+                <div class="vet-qual">BVSc &amp; AH</div>
+                <div class="vet-meta">9 yrs experience • Bandra (E)</div>
+                <div class="rating">★★★★☆ 4.6 (210 reviews)</div>
+                <div class="edu-row">Education: Nagpur Veterinary College</div>
+                <div class="timing-row">Today: 5:00 PM – 8:00 PM</div>
+                <span class="chip">General medicine</span><span class="chip">Vaccinations</span>
+              </div>
+              <div class="fee">
+                Video consult<br><strong>₹600</strong>
+              </div>
+            </div>
+            <div class="review-snippet">
+              “Great for first-time pet parents and basic issues.”
+            </div>
+            <div class="btn-row">
+              <div class="btn-sm">View profile</div>
+              <div class="btn-sm primary">View video slots</div>
+            </div>
+          </div>
+
+          <div class="vet-card">
+            <div class="vet-header">
+              <div>
+                <div class="vet-name">Dr. Neha Kulkarni</div>
+                <div class="vet-qual">BVSc &amp; AH</div>
+                <div class="vet-meta">7 yrs experience • Video-only</div>
+                <div class="rating">★★★★☆ 4.7 (155 reviews)</div>
+                <div class="edu-row">Education: KVAFSU • Companion animal practice</div>
+                <div class="timing-row">Today: 3:00 PM – 5:30 PM</div>
+                <span class="chip">Second opinions</span><span class="chip">Lab report review</span>
+              </div>
+              <div class="fee">
+                Video consult<br><strong>₹550</strong>
+              </div>
+            </div>
+            <div class="review-snippet">
+              “Explains lab reports very clearly, great follow-up advice.”
+            </div>
+            <div class="btn-row">
+              <div class="btn-sm">View profile</div>
+              <div class="btn-sm primary">View video slots</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- IN-CLINIC VISIT PANEL -->
+  <section id="clinic-panel" class="panel">
+    <div class="panel-title">In-clinic appointment</div>
+    <div class="panel-sub">
+      Practo-style hybrid listing – hospitals + individual vets – with reviews, timings, experience &amp; education.
+    </div>
+
+    <div class="stepper">
+      <span class="step-pill active">1. Select pet &amp; reason</span>
+      <span class="step-pill active">2. Search &amp; filters</span>
+      <span class="step-pill active">3. Listing &amp; doctor details</span>
+      <span class="step-pill active">4. Choose clinic slot</span>
+      <span class="step-pill">5. Payment &amp; confirmation</span>
+    </div>
+
+    <div class="clinic-layout">
+      <!-- Filters -->
+      <aside class="filter-card">
+        <div class="filter-heading">Filters</div>
+        <div class="label">Location</div>
+        <div class="filter-pill">Andheri West</div>
+        <div class="filter-pill">Lokhandwala</div>
+        <div class="filter-pill">Versova</div>
+
+        <div class="label" style="margin-top:8px;">Experience</div>
+        <div class="filter-pill">10+ years</div>
+        <div class="filter-pill">5–10 years</div>
+
+        <div class="label" style="margin-top:8px;">Consultation fee</div>
+        <div class="filter-pill">Under ₹600</div>
+        <div class="filter-pill">₹600–900</div>
+        <div class="filter-pill">₹900+</div>
+
+        <div class="label" style="margin-top:8px;">Speciality</div>
+        <div class="filter-pill">Internal medicine</div>
+        <div class="filter-pill">Dermatology</div>
+        <div class="filter-pill">Surgery</div>
+        <div class="filter-pill">General practice</div>
+      </aside>
+
+      <!-- Listing -->
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <div class="pet-selector">
+            Pet:
+            <select>
+              <option>Lucy (Dog)</option>
+              <option>Zoey (Cat)</option>
+            </select>
+          </div>
+          <div style="font-size:11px;color:#6f7b84;">
+            Reason: <strong>Kidney follow-up / chronic care</strong>
+          </div>
+        </div>
+
+        <div class="listing-header">
+          <div class="listing-meta" id="listingMeta">Showing 14 vets &amp; clinics in <strong>Andheri West</strong></div>
+          <div class="sort-row">
+            Sort by:
+            <span class="active">Relevance</span>
+            <span>Experience</span>
+            <span>Rating</span>
+            <span>Fee</span>
+          </div>
+        </div>
+
+        <div class="vet-list">
+          <!-- 1: Dr Dave hospital -->
+          <div class="vet-card clickable-card active">
+            <div class="vet-header">
+              <div>
+                <div class="vet-name">Dave Veterinary Hospital</div>
+                <div class="vet-qual">Multi-doctor hospital • Lead: Dr. Vikram Dave</div>
+                <div class="vet-meta">18+ yrs experience • Andheri (W) • 2.1 km</div>
+                <div class="rating">★★★★★ 4.9 (320 reviews)</div>
+                <div class="edu-row">Lead vet: BVSc &amp; AH, M.V.Sc (Medicine) • Bombay Veterinary College</div>
+                <div class="timing-row">Today: 4:00 PM – 8:00 PM • Tomorrow: 10:00 AM – 1:30 PM</div>
+                <span class="chip">Internal medicine</span>
+                <span class="chip">Chronic kidney disease</span>
+                <span class="chip">In-house diagnostics</span>
+                <div class="highlight-line">
+                  “Known for long-term chronic care plans and detailed communication with pet parents.”
+                </div>
+                <div class="review-snippet">
+                  “We’ve been treating Lucy’s CKD here – very systematic, transparent and empathetic.”
+                </div>
+              </div>
+              <div class="fee">
+                Clinic fee<br><strong>₹900</strong><br>
+                <span style="font-size:10px;color:#7c8891;">Pay now or at clinic</span>
+              </div>
+            </div>
+            <div class="btn-row">
+              <div class="btn-sm">View hospital &amp; doctors</div>
+              <div class="btn-sm primary" data-book="clinic">Book clinic visit</div>
+              <div class="btn-sm muted">Video consult</div>
+            </div>
+          </div>
+
+          <!-- 2: Happy Paws clinic -->
+          <div class="vet-card clickable-card">
+            <div class="vet-header">
+              <div>
+                <div class="vet-name">Happy Paws Pet Clinic</div>
+                <div class="vet-qual">Multi-vet clinic • Avg 8 yrs exp</div>
+                <div class="vet-meta">Lokhandwala • 1.4 km</div>
+                <div class="rating">★★★★☆ 4.5 (180 reviews)</div>
+                <div class="edu-row">Team includes BVSc grads from Mumbai &amp; Bengaluru.</div>
+                <div class="timing-row">Today: 3:00 PM – 9:00 PM • Sun: 10:00 AM – 2:00 PM</div>
+                <span class="chip">General medicine</span><span class="chip">Vaccinations</span>
+                <div class="highlight-line">
+                  Good for routine checkups, vaccinations and basic procedures.
+                </div>
+              </div>
+              <div class="fee">
+                Clinic fee<br><strong>₹650</strong>
+              </div>
+            </div>
+            <div class="btn-row">
+              <div class="btn-sm">View clinic details</div>
+              <div class="btn-sm primary">Book clinic visit</div>
+              <div class="btn-sm muted">Video consult</div>
+            </div>
+          </div>
+
+          <!-- 3: Individual vets -->
+          <div class="vet-card clickable-card">
+            <div class="vet-header">
+              <div>
+                <div class="vet-name">Dr. Sanjay Menon</div>
+                <div class="vet-qual">BVSc &amp; AH</div>
+                <div class="vet-meta">12 yrs experience • Andheri (W) • 1.8 km</div>
+                <div class="rating">★★★★☆ 4.7 (145 reviews)</div>
+                <div class="edu-row">Education: Kerala Veterinary College</div>
+                <div class="timing-row">Today: 5:00 PM – 8:30 PM</div>
+                <span class="chip">General practice</span><span class="chip">Senior pets</span>
+              </div>
+              <div class="fee">
+                Clinic fee<br><strong>₹700</strong>
+              </div>
+            </div>
+            <div class="btn-row">
+              <div class="btn-sm">View profile</div>
+              <div class="btn-sm primary">Book clinic visit</div>
+              <div class="btn-sm muted">Video consult</div>
+            </div>
+          </div>
+
+          <div class="vet-card clickable-card">
+            <div class="vet-header">
+              <div>
+                <div class="vet-name">Dr. Ananya Rao</div>
+                <div class="vet-qual">BVSc &amp; AH</div>
+                <div class="vet-meta">7 yrs experience • Versova</div>
+                <div class="rating">★★★★☆ 4.7 (96 reviews)</div>
+                <div class="edu-row">Education: Madras Veterinary College • Fellowship in Dermatology</div>
+                <div class="timing-row">Today: 11:00 AM – 2:00 PM • 6:00 PM – 8:00 PM</div>
+                <span class="chip">Dermatology</span><span class="chip">Allergies</span>
+              </div>
+              <div class="fee">
+                Clinic fee<br><strong>₹700</strong>
+              </div>
+            </div>
+            <div class="btn-row">
+              <div class="btn-sm">View profile</div>
+              <div class="btn-sm primary">Book clinic visit</div>
+              <div class="btn-sm muted">Video consult</div>
+            </div>
+          </div>
+
+          <div class="vet-card clickable-card">
+            <div class="vet-header">
+              <div>
+                <div class="vet-name">Purr &amp; Paws Animal Clinic</div>
+                <div class="vet-qual">Cat-focused clinic</div>
+                <div class="vet-meta">3 vets • Four Bungalows • 3.1 km</div>
+                <div class="rating">★★★★☆ 4.6 (88 reviews)</div>
+                <div class="edu-row">Vets trained in feline-only practice.</div>
+                <div class="timing-row">Today: 10:00 AM – 1:00 PM • 5:00 PM – 9:00 PM</div>
+                <span class="chip">Feline-only</span><span class="chip">Behaviour sensitive</span>
+              </div>
+              <div class="fee">
+                Clinic fee<br><strong>₹750</strong>
+              </div>
+            </div>
+            <div class="btn-row">
+              <div class="btn-sm">View clinic details</div>
+              <div class="btn-sm primary">Book clinic visit</div>
+              <div class="btn-sm muted">Video consult</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right side – Dr Dave focus -->
+      <aside class="doc-profile" id="clinic-doc-panel">
+        <h3>Dave Veterinary Hospital</h3>
+        <div class="doc-role">Lead consultant: Dr. Vikram Dave</div>
+        <div class="doc-rating">★★★★★ 4.9 (320 reviews)</div>
+        <div class="doc-tags">
+          <span class="chip">Internal medicine</span>
+          <span class="chip">Chronic kidney disease</span>
+          <span class="chip">In-house diagnostics</span>
+        </div>
+        <div class="doc-desc">
+          Multi-doctor hospital with strong focus on chronic cases, diagnostics and continuity of care.
+          Ideal for pets like Lucy who need regular monitoring.
+        </div>
+
+        <div class="slot-table">
+          <div class="label">Next available clinic slots</div>
+          <div class="slot-row">
+            <div class="slot-day">Today</div>
+            <div class="slot-pill">4:00 PM</div>
+            <div class="slot-pill">4:30 PM</div>
+            <div class="slot-pill">5:00 PM</div>
+          </div>
+          <div class="slot-row">
+            <div class="slot-day">Tomorrow</div>
+            <div class="slot-pill">10:00 AM</div>
+            <div class="slot-pill">10:30 AM</div>
+            <div class="slot-pill">11:00 AM</div>
+          </div>
+        </div>
+
+        <div class="booking-summary">
+          <p><strong>Pet:</strong> Lucy (Dog)</p>
+          <p><strong>Visit type:</strong> In-clinic consultation</p>
+          <p><strong>Fee:</strong> ₹900 (Pay at clinic or online)</p>
+        </div>
+
+        <div class="cta-row">
+          <button class="btn-ghost">Back to all vets</button>
+          <button class="btn-main">Confirm slot &amp; continue</button>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- LAB TESTS PANEL -->
+  <section id="lab-panel" class="panel">
+    <div class="panel-title">Lab tests &amp; home collection</div>
+    <div class="panel-sub">
+      Diagnostics journey with a test dropdown – pet parent can pick tests (like Practo), or use vet-prescribed order.
+    </div>
+
+    <div class="stepper">
+      <span class="step-pill active">1. Choose tests (dropdown)</span>
+      <span class="step-pill active">2. Lab listing &amp; home collection slots</span>
+      <span class="step-pill">3. Sample tracking &amp; digital reports</span>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="label">Step 1 – Select tests</div>
+        <p style="font-size:12px;margin-bottom:6px;">
+          You can either follow your vet’s prescription or choose tests from this list.
+        </p>
+
+        <div style="margin-bottom:8px;font-size:12px;">
+          <strong>Prescribed by vet (example):</strong>
+        </div>
+        <ul class="list">
+          <li>CBC</li>
+          <li>Renal profile</li>
+          <li>Urine analysis</li>
+        </ul>
+
+        <div class="label" style="margin-top:10px;">Add tests (dropdown)</div>
+        <select multiple size="6" style="width:100%;border-radius:10px;border:1px solid var(--border);font-size:12px;padding:6px;">
+          <option>CBC (Complete Blood Count)</option>
+          <option>Renal profile</option>
+          <option>Liver function tests (LFT)</option>
+          <option>Urine analysis</option>
+          <option>X-ray (Chest/Abdomen)</option>
+          <option>Ultrasound (Abdominal)</option>
+        </select>
+        <p style="font-size:11px;color:#6f7b84;margin-top:6px;">
+          In the real product, this dropdown will be auto-filled from the vet’s prescription, with the option to add extra tests if advised.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="label">Step 2 – Vet-linked lab listing</div>
+        <div class="vet-list">
+          <div class="vet-card clickable-card">
+            <div class="vet-header">
+              <div>
+                <div class="vet-name">PawDiagnostics Lab</div>
+                <div class="vet-meta">Vet-only diagnostics • Andheri (E) • 2.1 km</div>
+                <div class="rating">★★★★★ 4.8 (140 reviews)</div>
+                <div class="timing-row">Home collection: 7:00 AM – 11:00 AM • 4:00 PM – 7:00 PM</div>
+                <span class="chip">Home collection</span><span class="chip">Same-day reporting</span>
+              </div>
+              <div class="fee">
+                Est. package<br><strong>₹2,100</strong><br>
+                <span style="font-size:10px;color:#7c8891;">Includes home visit</span>
+              </div>
+            </div>
+            <div class="highlight-line">
+              Frequently used by clinics in Andheri for renal panels and pre-surgery workups.
+            </div>
+            <div class="btn-row">
+              <div class="btn-sm">View test details</div>
+              <div class="btn-sm primary">Book home collection</div>
+            </div>
+          </div>
+
+          <div class="vet-card clickable-card">
+            <div class="vet-header">
+              <div>
+                <div class="vet-name">PetPath Labs</div>
+                <div class="vet-meta">24x7 processing • Jogeshwari • 4.0 km</div>
+                <div class="rating">★★★★☆ 4.5 (95 reviews)</div>
+                <div class="timing-row">Home collection: 6:30 AM – 10:00 AM</div>
+                <span class="chip">Early morning slots</span>
+              </div>
+              <div class="fee">
+                Est. package<br><strong>₹1,900</strong>
+              </div>
+            </div>
+            <div class="btn-row">
+              <div class="btn-sm">View test details</div>
+              <div class="btn-sm primary">Book home collection</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOME / ON-SPOT VISIT PANEL -->
+  <section id="homevisit-panel" class="panel">
+    <div class="panel-title">Home / on-spot visit</div>
+    <div class="panel-sub">
+      For pets that cannot travel and community animals who need on-spot treatment.
+    </div>
+
+    <div class="stepper">
+      <span class="step-pill active">1. Case details</span>
+      <span class="step-pill active">2. Vet options</span>
+      <span class="step-pill">3. Visit notes &amp; records</span>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="label">Sick pet – Home visit</div>
+        <p><strong>Pet:</strong> Lucy • CKD • Struggles to travel to clinic.</p>
+        <p style="margin-top:4px;">Owner selects <strong>“Home visit”</strong>, adds address, preferred time and behaviour notes.</p>
+        <ul class="list">
+          <li>Pin-code, building name, landmark.</li>
+          <li>Lift access / parking info.</li>
+          <li>Behaviour notes (anxious, muzzle needed, etc.).</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="label">Injured community animal – On-spot visit</div>
+        <p><strong>Case:</strong> Injured stray dog with hind-leg limp.</p>
+        <p><strong>Location:</strong> Internal road near Lokhandwala back road.</p>
+        <p style="margin-top:4px;">
+          Caretaker selects <strong>“Community animal / stray”</strong> and sees vets and NGOs who support such cases.
+        </p>
+        <ul class="list">
+          <li>Shows vets who do on-spot/roadside treatment with basic triage.</li>
+          <li>Links to NGO support / subsidised diagnostics when available.</li>
+          <li>Creates a “community animal” record with treatment notes.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONNECTED SERVICES PANEL -->
+  <section id="services-panel" class="panel">
+    <div class="panel-title">Connected services</div>
+    <div class="panel-sub">
+      Phase-3 view – Urban Company-style services linked back to medical records where relevant.
+    </div>
+
+    <div class="card" style="margin-bottom:10px;">
+      <div class="label">Why this matters</div>
+      <p style="font-size:12px;">
+        Over time, PawNect becomes Practo + Pharmeasy + Urban Company for pets – healthcare, diagnostics and daily services in one ecosystem.
+      </p>
+    </div>
+
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-tag">Grooming</div>
+        <div class="service-title">At-home grooming</div>
+        <div class="service-sub">
+          Verified groomers for baths, haircuts and nail trims – with basic skin and coat checks.
+        </div>
+        <ul class="list">
+          <li>Linked to pet profile (Lucy / Zoey).</li>
+          <li>Flags suspicious skin issues back to PawNect vets.</li>
+        </ul>
+      </div>
+
+      <div class="service-card">
+        <div class="service-tag">Walking</div>
+        <div class="service-title">Daily dog walking</div>
+        <div class="service-sub">
+          Trusted walkers with GPS-tracked walks and feedback notes.
+        </div>
+        <ul class="list">
+          <li>Recurring schedules (Mon–Fri, twice a day, etc.).</li>
+          <li>Option to share issues (limping, fatigue) with vet in one tap.</li>
+        </ul>
+      </div>
+
+      <div class="service-card">
+        <div class="service-tag">Boarding / Daycare</div>
+        <div class="service-title">Boarding &amp; daycare</div>
+        <div class="service-sub">
+          Boarding centres and in-home sitters, with medical notes and emergency contacts attached.
+        </div>
+        <ul class="list">
+          <li>Share vet details, ongoing meds and allergies.</li>
+          <li>Emergency vet contact via PawNect if needed.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECORDS PANEL -->
+  <section id="records-panel" class="panel">
+    <div class="panel-title">My records</div>
+    <div class="panel-sub">
+      How all consults, tests and visits come together for each pet – in a simple, Practo-like record view.
+    </div>
+
+    <div class="records-layout">
+      <div class="card">
+        <div class="label">Pets</div>
+        <div style="display:flex;gap:8px;margin-bottom:6px;">
+          <div class="pet-selector">
+            Pet:
+            <select>
+              <option>Lucy (Dog)</option>
+              <option>Zoey (Cat)</option>
+            </select>
+          </div>
+        </div>
+
+        <h3>Lucy – Key records</h3>
+        <div class="record-row">
+          <span>CKD follow-up (video)</span>
+          <span>Dr. Dave<span class="record-pill">Consult</span></span>
+        </div>
+        <div class="record-row">
+          <span>In-clinic visit – physical exam</span>
+          <span>Dr. Dave<span class="record-pill">Clinic</span></span>
+        </div>
+        <div class="record-row">
+          <span>CBC + renal profile + UA</span>
+          <span>PawDiagnostics<span class="record-pill">Lab</span></span>
+        </div>
+        <div class="record-row">
+          <span>Renal diet &amp; medication plan</span>
+          <span><span class="record-pill">Prescription</span></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Example: How Dr. Dave sees this</h3>
+        <p style="font-size:12px;margin-top:4px;">
+          In the vet interface, this appears as a single timeline:
+        </p>
+        <ul class="list">
+          <li>Video consult ➜ lab order created.</li>
+          <li>Lab sample collected at home ➜ reports uploaded.</li>
+          <li>In-clinic checkup scheduled once reports are ready.</li>
+          <li>Updated plan documented and visible to the pet parent.</li>
+        </ul>
+        <p style="font-size:11px;color:#6f7b84;margin-top:6px;">
+          For Dr. Dave, this means no scattered WhatsApp records and no loss of continuity between visits, labs and home care.
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- VIDEO CONSULT SLOT PICKER MODAL -->
+<div class="modal-backdrop" id="videoModalBackdrop">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Select a video consult slot</div>
+        <div class="modal-sub">Dr. Vikram Dave • Video consultation • Fee: ₹800</div>
+        <span class="video-chip">Video consult</span>
+      </div>
+      <button class="modal-close" id="closeVideoModal">&times;</button>
+    </div>
+
+    <div class="label">Pick a day &amp; time</div>
+    <div class="slot-row">
+      <div class="slot-day">Today</div>
+      <div class="slot-pill">4:00 PM</div>
+      <div class="slot-pill">4:30 PM</div>
+      <div class="slot-pill">5:00 PM</div>
+    </div>
+    <div class="slot-row">
+      <div class="slot-day">Tomorrow</div>
+      <div class="slot-pill">10:00 AM</div>
+      <div class="slot-pill">10:30 AM</div>
+      <div class="slot-pill">11:00 AM</div>
+    </div>
+
+    <div class="modal-summary" id="videoSummary">
+      Selected slot: <strong>None</strong>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-ghost" id="cancelVideo">Cancel</button>
+      <button class="btn-main">Continue to payment</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // MAIN NAV – switch between panels
+  const mainTabs = document.querySelectorAll('.main-tab');
+  const panels = document.querySelectorAll('.panel');
+
+  mainTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      mainTabs.forEach(t => t.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.panel).classList.add('active');
+    });
+  });
+
+  // HOME QUICK ACTIONS – go to specific panel
+  document.querySelectorAll('.qa-card-home').forEach(card => {
+    card.addEventListener('click', () => {
+      const targetPanelId = card.dataset.goto;
+      mainTabs.forEach(t => t.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      const targetPanel = document.getElementById(targetPanelId);
+      const targetTab = document.querySelector('.main-tab[data-panel="' + targetPanelId + '"]');
+      if (targetPanel && targetTab) {
+        targetTab.classList.add('active');
+        targetPanel.classList.add('active');
+      }
+    });
+  });
+
+  // ONLINE CONSULT – Dr Dave card fully clickable for slots
+  const openVideoBtn = document.getElementById('openVideoModal');
+  const daveOnlineCard = document.getElementById('online-dave-card');
+
+  const videoModalBackdrop = document.getElementById('videoModalBackdrop');
+  const closeVideoBtn = document.getElementById('closeVideoModal');
+  const cancelVideoBtn = document.getElementById('cancelVideo');
+  const videoSummary = document.getElementById('videoSummary');
+
+  var selectedVideoSlot = null;
+
+  function openVideoModal() {
+    if (!videoModalBackdrop) return;
+    videoModalBackdrop.style.display = 'flex';
+    selectedVideoSlot = null;
+    videoSummary.innerHTML = 'Selected slot: <strong>None</strong>';
+    var pills = videoModalBackdrop.querySelectorAll('.slot-pill');
+    for (var i = 0; i < pills.length; i++) {
+      pills[i].classList.remove('selected');
+    }
+  }
+
+  if (openVideoBtn) {
+    openVideoBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      openVideoModal();
+    });
+  }
+
+  if (daveOnlineCard) {
+    daveOnlineCard.style.cursor = 'pointer';
+    daveOnlineCard.addEventListener('click', function(e) {
+      // Ignore clicks on other buttons to avoid double trigger
+      if (e.target.classList.contains('btn-sm') && !e.target.id) return;
+      openVideoModal();
+    });
+  }
+
+  if (closeVideoBtn && cancelVideoBtn && videoModalBackdrop) {
+    closeVideoBtn.addEventListener('click', function() {
+      videoModalBackdrop.style.display = 'none';
+    });
+    cancelVideoBtn.addEventListener('click', function() {
+      videoModalBackdrop.style.display = 'none';
+    });
+
+    videoModalBackdrop.addEventListener('click', function(e) {
+      if (e.target === videoModalBackdrop) {
+        videoModalBackdrop.style.display = 'none';
+      }
+    });
+
+    var slotPills = videoModalBackdrop.querySelectorAll('.slot-pill');
+    for (var j = 0; j < slotPills.length; j++) {
+      slotPills[j].addEventListener('click', function() {
+        for (var k = 0; k < slotPills.length; k++) {
+          slotPills[k].classList.remove('selected');
+        }
+        this.classList.add('selected');
+        selectedVideoSlot = this.textContent.trim();
+        videoSummary.innerHTML = 'Selected slot: <strong>' + selectedVideoSlot + '</strong>';
+      });
+    }
+  }
+
+  // IN-CLINIC LISTINGS – clickable selection
+  var clinicPanel = document.getElementById('clinic-panel');
+  var clinicCards = clinicPanel ? clinicPanel.querySelectorAll('.vet-card.clickable-card') : [];
+  var listingMeta = document.getElementById('listingMeta');
+  var daveRightPanel = document.getElementById('clinic-doc-panel');
+  var clinicBookButtons = document.querySelectorAll('[data-book="clinic"]');
+
+  for (var i = 0; i < clinicCards.length; i++) {
+    (function(card) {
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', function(e) {
+        // If clicking on a button, don't override its behaviour
+        if (e.target.classList.contains('btn-sm')) return;
+
+        for (var c = 0; c < clinicCards.length; c++) {
+          clinicCards[c].classList.remove('active');
+        }
+        card.classList.add('active');
+
+        var nameEl = card.querySelector('.vet-name');
+        if (listingMeta && nameEl) {
+          listingMeta.innerHTML =
+            'Showing 14 vets &amp; clinics in <strong>Andheri West</strong>' +
+            '<br/><span style="font-size:11px;color:#6f7b84;">Selected: <strong>' +
+            nameEl.textContent.trim() +
+            '</strong></span>';
+        }
+      });
+    })(clinicCards[i]);
+  }
+
+  // When clicking "Book clinic visit" on Dr Dave – focus right panel
+  for (var b = 0; b < clinicBookButtons.length; b++) {
+    clinicBookButtons[b].addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (daveRightPanel) {
+        daveRightPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        daveRightPanel.style.boxShadow = '0 0 0 2px rgba(22,122,119,0.5)';
+        setTimeout(function() {
+          daveRightPanel.style.boxShadow = '';
+        }, 900);
+      }
+    });
+  }
+</script>
+</body>
+</html>

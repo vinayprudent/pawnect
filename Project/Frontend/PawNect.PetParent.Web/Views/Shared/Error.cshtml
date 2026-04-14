@@ -1,0 +1,29 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="text-center">
+    <h1 class="display-4 text-danger"><i class="bi bi-exclamation-circle me-2"></i>Error</h1>
+    <p class="lead">An error occurred while processing your request.</p>
+
+    @if (Model?.ShowRequestId ?? false)
+    {
+        <p class="text-muted">
+            <strong>Request ID:</strong> <code>@Model.RequestId</code>
+        </p>
+    }
+
+    @if (!string.IsNullOrEmpty(Model?.Message))
+    {
+        <div class="alert alert-danger mt-4">
+            @Model.Message
+        </div>
+    }
+
+    <div class="mt-4">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+            <i class="bi bi-house me-2"></i>Go to Home
+        </a>
+    </div>
+</div>

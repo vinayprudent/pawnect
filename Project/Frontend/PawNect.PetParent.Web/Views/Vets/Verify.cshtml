@@ -1,0 +1,91 @@
+@model BookingVerifyViewModel
+@using PawNect.PetParent.Web.Models
+@{
+    var isOnline = Model.ConsultMode == ConsultMode.Online;
+    ViewData["Title"] = isOnline ? "Pre-consult details" : "Verify booking details";
+}
+
+<div class="verify-booking-page">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" asp-route-mode="@Model.ConsultMode">@(isOnline ? "Online Consultation" : "Find Vets")</a></li>
+            <li class="breadcrumb-item"><a asp-action="SlotSelect" asp-route-vetId="@Model.VetId" asp-route-mode="@Model.ConsultMode">Select slot</a></li>
+            <li class="breadcrumb-item active">@(isOnline ? "Pre-consult details" : "Verify details")</li>
+        </ol>
+    </nav>
+    <h5 class="mb-3">@(isOnline ? "Pre-consult details" : "Verify booking details")</h5>
+    <div class="row">
+        <div class="col-lg-8">
+            <form asp-action="ConfirmBooking" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="VetId" />
+                <input type="hidden" asp-for="VetName" />
+                <input type="hidden" asp-for="ClinicName" />
+                <input type="hidden" asp-for="ClinicAddress" />
+                <input type="hidden" asp-for="SlotDate" />
+                <input type="hidden" asp-for="SlotTime" />
+                <input type="hidden" asp-for="SlotDisplay" />
+                <input type="hidden" asp-for="ConsultMode" />
+                <div class="card mb-3">
+                    <div class="card-header">Reason for @(isOnline ? "consult" : "visit")</div>
+                    <div class="card-body">
+                        <label class="form-label">Reason for @(isOnline ? "consult" : "visit") (optional)</label>
+                        <input type="text" asp-for="ReasonForVisit" class="form-control" placeholder="@(isOnline ? "e.g. Follow-up, lab report review" : "e.g. Annual check-up, vaccination")" />
+                    </div>
+                </div>
+                @if (isOnline)
+                {
+                    <div class="card mb-3">
+                        <div class="card-header">Symptoms (optional)</div>
+                        <div class="card-body">
+                            <label class="form-label">Chief complaints or symptoms</label>
+                            <textarea asp-for="Symptoms" class="form-control" rows="3" placeholder="e.g. Reduced appetite, vomiting, lethargy. Add anything you want the vet to know before the call."></textarea>
+                        </div>
+                    </div>
+                }
+                <div class="card mb-3">
+                    <div class="card-header">Pet selection</div>
+                    <div class="card-body">
+                        @if (Model.Pets.Any())
+                        {
+                            <label class="form-label">Select pet</label>
+                            <select asp-for="SelectedPetId" class="form-select" required>
+                                @foreach (var p in Model.Pets)
+                                {
+                                    <option value="@p.Id">@p.Name (@p.Species)</option>
+                                }
+                            </select>
+                        }
+                        else
+                        {
+                            <p class="text-warning mb-0">You have no pets. <a asp-controller="Pets" asp-action="Create">Add a pet</a> first to book.</p>
+                            <input type="hidden" asp-for="SelectedPetId" value="0" />
+                        }
+                    </div>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-header">Pet parent details</div>
+                    <div class="card-body">
+                        <p class="mb-1"><strong>Name:</strong> @Model.PetParentName</p>
+                        <p class="mb-1"><strong>Email:</strong> @Model.PetParentEmail</p>
+                        <p class="mb-0"><strong>Phone:</strong> @(Model.PetParentPhone ?? "—")</p>
+                    </div>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-header">@(isOnline ? "Consult" : "Clinic") & slot</div>
+                    <div class="card-body">
+                        <p class="mb-1"><strong>Vet:</strong> @Model.VetName</p>
+                        <p class="mb-1"><strong>Clinic:</strong> @Model.ClinicName</p>
+                        <p class="mb-1"><strong>Address:</strong> @Model.ClinicAddress</p>
+                        <p class="mb-0"><strong>Slot:</strong> @Model.SlotDisplay</p>
+                    </div>
+                </div>
+                <p class="small text-muted">Next step: placeholder payment screen, then confirmation.</p>
+                @if (Model.Pets.Any())
+                {
+                    <button type="submit" class="btn btn-pawnect btn-lg">@(isOnline ? "Proceed to payment (placeholder) – Book Online Consult" : "Proceed to payment (placeholder)")</button>
+                }
+            </form>
+        </div>
+    </div>
+</div>

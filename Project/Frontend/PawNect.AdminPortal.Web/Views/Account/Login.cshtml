@@ -1,0 +1,21 @@
+@{
+    ViewData["Title"] = "Admin Login";
+    var returnUrl = ViewData["ReturnUrl"] as string;
+}
+<div class="card" style="max-width: 420px; margin: 2rem auto;">
+    <h1>PawNect Admin</h1>
+    <p style="color: var(--muted); margin-bottom: 1.5rem;">Sign in with admin credentials.</p>
+    <form method="post" asp-action="Login" asp-route-returnUrl="@returnUrl">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required placeholder="admin@pawnect.com" autofocus />
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required placeholder="••••••••" />
+        </div>
+        <button type="submit" class="btn btn-primary">Sign in</button>
+    </form>
+    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--muted);">Default: admin@pawnect.com / Admin@123</p>
+</div>

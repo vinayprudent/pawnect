@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
+  </PropertyGroup>
+
+  <!-- When published as a dependency (e.g. from PetParent/AdminPortal), do not publish appsettings to avoid NETSDK1152 -->
+  <ItemGroup Condition="'$(ExcludeReferencedProjectContent)' == 'true'">
+    <Content Update="appsettings*.json">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../PawNect.Domain/PawNect.Domain.csproj" />
+    <ProjectReference Include="../PawNect.Application/PawNect.Application.csproj" />
+    <ProjectReference Include="../PawNect.Infrastructure/PawNect.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

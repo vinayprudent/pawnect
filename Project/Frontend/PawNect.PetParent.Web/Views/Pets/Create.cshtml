@@ -1,0 +1,101 @@
+@model CreatePetViewModel
+@{
+    ViewData["Title"] = "Add New Pet";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Add New Pet</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control" placeholder="Enter pet name" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Species" class="form-label"></label>
+                            <select asp-for="Species" class="form-select">
+                                <option value="">Select species...</option>
+                                @foreach (var species in PetSpeciesHelper.Species)
+                                {
+                                    <option value="@species.Key">@species.Value</option>
+                                }
+                            </select>
+                            <span asp-validation-for="Species" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Breed" class="form-label"></label>
+                            <input asp-for="Breed" class="form-control" placeholder="e.g., Golden Retriever" />
+                            <span asp-validation-for="Breed" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DateOfBirth" class="form-label"></label>
+                            <input asp-for="DateOfBirth" type="date" class="form-control" />
+                            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="WeightKg" class="form-label"></label>
+                            <div class="input-group">
+                                <input asp-for="WeightKg" type="number" step="0.1" class="form-control" placeholder="0.0" />
+                                <span class="input-group-text">kg</span>
+                            </div>
+                            <span asp-validation-for="WeightKg" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Color" class="form-label"></label>
+                            <input asp-for="Color" class="form-control" placeholder="e.g., Brown" />
+                            <span asp-validation-for="Color" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="MicrochipId" class="form-label"></label>
+                            <input asp-for="MicrochipId" class="form-control" placeholder="Optional" />
+                            <span asp-validation-for="MicrochipId" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ProfileImageUrl" class="form-label"></label>
+                        <input asp-for="ProfileImageUrl" type="url" class="form-control" placeholder="https://example.com/pet-photo.jpg" />
+                        <span asp-validation-for="ProfileImageUrl" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Tell us about your pet..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-2"></i>Add Pet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

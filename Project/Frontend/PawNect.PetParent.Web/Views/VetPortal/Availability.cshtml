@@ -1,0 +1,55 @@
+@model VetAvailabilitySettings
+@{
+    ViewData["Title"] = "My Availability";
+}
+
+<div class="vet-availability-page">
+    <h2 class="mb-2"><i class="bi bi-calendar3 me-2"></i>My Availability</h2>
+    <p class="text-muted mb-4">Set how far ahead pet parents can book, your slot length (batch), and max patients per slot. If you don't set anything, default is 365 days, 60-min slots, max 3 patients per slot.</p>
+
+    <form asp-action="Availability" method="post" class="card">
+        @Html.AntiForgeryToken()
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="DaysAhead" class="form-label">Days ahead to show slots</label>
+                    <input asp-for="DaysAhead" class="form-control" type="number" min="1" max="730" />
+                    <small class="text-muted">How many days from today pet parents can book. Default 365.</small>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="SlotDurationMinutes" class="form-label">Slot duration (minutes)</label>
+                    <input asp-for="SlotDurationMinutes" class="form-control" type="number" min="15" max="120" step="15" />
+                    <small class="text-muted">Each bookable slot length, e.g. 60 = 1-hour batch. Default 60.</small>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="MaxAppointmentsPerSlot" class="form-label">Max appointments per slot</label>
+                    <input asp-for="MaxAppointmentsPerSlot" class="form-control" type="number" min="1" max="20" />
+                    <small class="text-muted">Max patients in a single time batch. Default 3.</small>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="StartHour" class="form-label">Working day start (hour, 0–23)</label>
+                    <input asp-for="StartHour" class="form-control" type="number" min="0" max="23" />
+                    <small class="text-muted">First slot start hour. Default 9 (9 AM).</small>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="EndHour" class="form-label">Working day end (hour, 0–24)</label>
+                    <input asp-for="EndHour" class="form-control" type="number" min="0" max="24" />
+                    <small class="text-muted">Last slot starts before this hour. Default 17 (5 PM).</small>
+                </div>
+            </div>
+            <div class="mt-4">
+                <button type="submit" class="btn btn-pawnect">Save availability</button>
+                <a asp-action="Index" class="btn btn-outline-secondary ms-2">Back to Dashboard</a>
+            </div>
+        </div>
+    </form>
+
+    <div class="card mt-4">
+        <div class="card-header">Current settings summary</div>
+        <div class="card-body small">
+            <p class="mb-1">Pet parents see bookable slots from <strong>today</strong> up to <strong>@Model.DaysAhead days</strong> ahead.</p>
+            <p class="mb-1">Each slot is <strong>@Model.SlotDurationMinutes minutes</strong>. Up to <strong>@Model.MaxAppointmentsPerSlot</strong> patients can book the same slot.</p>
+            <p class="mb-0">Slots are generated between <strong>@Model.StartHour:00</strong> and <strong>@Model.EndHour:00</strong> each day.</p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,43 @@
+@model LabOrderDetailViewModel
+@{
+    ViewData["Title"] = "Order details";
+}
+
+<div class="lab-order-detail-page">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="OrderStatus">My lab orders</a></li>
+            <li class="breadcrumb-item active">@Model.OrderId</li>
+        </ol>
+    </nav>
+    <h2 class="mb-3">Order @Model.OrderId</h2>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <p class="mb-1"><strong>Test:</strong> @Model.TestDisplayName</p>
+            <p class="mb-1"><strong>Pet:</strong> @Model.PetName</p>
+            <p class="mb-1"><strong>Collection:</strong> @(Model.CollectionType == "Home" ? "Home collection" : "In-clinic")</p>
+            <p class="mb-1"><strong>Amount:</strong> ₹@Model.Price.ToString("N0")</p>
+            <p class="mb-1"><strong>Status:</strong> <span class="badge lab-status-badge">@Model.Status</span></p>
+            <p class="mb-1"><strong>Ordered at:</strong> @Model.OrderedAt</p>
+            @if (!string.IsNullOrEmpty(Model.SampleScheduledAt))
+            {
+                <p class="mb-1"><strong>Sample scheduled:</strong> @Model.SampleScheduledAt</p>
+            }
+            @if (!string.IsNullOrEmpty(Model.SampleCollectedAt))
+            {
+                <p class="mb-1"><strong>Sample collected:</strong> @Model.SampleCollectedAt</p>
+            }
+            @if (!string.IsNullOrEmpty(Model.ReportUploadedAt))
+            {
+                <p class="mb-0"><strong>Report uploaded:</strong> @Model.ReportUploadedAt</p>
+            }
+        </div>
+    </div>
+
+    <a asp-action="OrderStatus" class="btn btn-outline-pawnect btn-sm">Back to my orders</a>
+</div>
+
+<style>
+    .lab-status-badge { font-size: 0.8rem; }
+</style>

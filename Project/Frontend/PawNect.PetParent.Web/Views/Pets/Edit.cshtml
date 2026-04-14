@@ -1,0 +1,112 @@
+@model EditPetViewModel
+@{
+    ViewData["Title"] = $"Edit {Model?.Name}";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-pencil me-2"></i>Edit Pet</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control" placeholder="Enter pet name" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Species" class="form-label"></label>
+                            <select asp-for="Species" class="form-select">
+                                @foreach (var species in PetSpeciesHelper.Species)
+                                {
+                                    <option value="@species.Key">@species.Value</option>
+                                }
+                            </select>
+                            <span asp-validation-for="Species" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Breed" class="form-label"></label>
+                            <input asp-for="Breed" class="form-control" placeholder="e.g., Golden Retriever" />
+                            <span asp-validation-for="Breed" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DateOfBirth" class="form-label"></label>
+                            <input asp-for="DateOfBirth" type="date" class="form-control" />
+                            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label asp-for="WeightKg" class="form-label"></label>
+                            <div class="input-group">
+                                <input asp-for="WeightKg" type="number" step="0.1" class="form-control" />
+                                <span class="input-group-text">kg</span>
+                            </div>
+                            <span asp-validation-for="WeightKg" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <label asp-for="Color" class="form-label"></label>
+                            <input asp-for="Color" class="form-control" />
+                            <span asp-validation-for="Color" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <label asp-for="MicrochipId" class="form-label"></label>
+                            <input asp-for="MicrochipId" class="form-control" />
+                            <span asp-validation-for="MicrochipId" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <label asp-for="Status" class="form-label"></label>
+                            <select asp-for="Status" class="form-select">
+                                @foreach (var status in PetStatusHelper.Statuses)
+                                {
+                                    <option value="@status.Key">@status.Value</option>
+                                }
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ProfileImageUrl" class="form-label"></label>
+                        <input asp-for="ProfileImageUrl" type="url" class="form-control" />
+                        <span asp-validation-for="ProfileImageUrl" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Details" asp-route-id="@Model?.Id" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-2"></i>Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,59 @@
+@model PetViewModel
+@{
+    ViewData["Title"] = $"Delete {Model?.Name}";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0"><i class="bi bi-exclamation-triangle me-2"></i>Delete Pet</h4>
+            </div>
+            <div class="card-body text-center">
+                @if (Model != null)
+                {
+                    @if (!string.IsNullOrEmpty(Model.ProfileImageUrl))
+                    {
+                        <img src="@Model.ProfileImageUrl" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;" alt="@Model.Name">
+                    }
+                    else
+                    {
+                        <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center mb-3" style="width: 150px; height: 150px;">
+                            <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                        </div>
+                    }
+
+                    <h4>@Model.Name</h4>
+                    <p class="text-muted">
+                        <span class="badge badge-species">@Model.Species</span>
+                        @if (!string.IsNullOrEmpty(Model.Breed))
+                        {
+                            <span class="ms-1">@Model.Breed</span>
+                        }
+                    </p>
+
+                    <div class="alert alert-warning mt-4">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <strong>Warning!</strong> This action cannot be undone. All data associated with this pet will be permanently deleted.
+                    </div>
+
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <div class="d-flex justify-content-center gap-2 mt-4">
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash me-2"></i>Yes, Delete Pet
+                            </button>
+                        </div>
+                    </form>
+                }
+                else
+                {
+                    <p class="text-muted">Pet not found.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

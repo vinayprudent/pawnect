@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - PawNect Admin</title>
+    <style>
+        :root { --bg: #0f172a; --card: #1e293b; --accent: #f59e0b; --text: #f1f5f9; --muted: #94a3b8; }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+        .navbar { background: var(--card); padding: 0.75rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #334155; }
+        .navbar a { color: var(--text); text-decoration: none; padding: 0.5rem 0.75rem; border-radius: 6px; }
+        .navbar a:hover { background: #334155; }
+        .nav-links { display: flex; gap: 0.5rem; align-items: center; }
+        .brand { font-weight: 700; color: var(--accent); }
+        main { padding: 1.5rem; max-width: 1400px; margin: 0 auto; }
+        .card { background: var(--card); border-radius: 10px; padding: 1.25rem; margin-bottom: 1rem; border: 1px solid #334155; }
+        h1, h2 { margin-top: 0; color: var(--accent); }
+        .btn { display: inline-block; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; font-weight: 500; border: none; cursor: pointer; }
+        .btn-primary { background: var(--accent); color: var(--bg); }
+        .btn-primary:hover { filter: brightness(1.1); }
+        .btn-secondary { background: #475569; color: var(--text); }
+        .btn-danger { background: #dc2626; color: white; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #334155; }
+        th { color: var(--muted); font-weight: 600; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.35rem; color: var(--muted); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; max-width: 400px; padding: 0.5rem 0.75rem; border: 1px solid #475569; border-radius: 6px; background: var(--bg); color: var(--text); }
+        .text-danger { color: #f87171; }
+        .alert { padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 1rem; }
+        .alert-danger { background: #7f1d1d; color: #fecaca; }
+        .alert-success { background: #14532d; color: #bbf7d0; }
+    </style>
+</head>
+<body>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <nav class="navbar">
+            <a class="brand" asp-controller="Home" asp-action="Index">PawNect Admin</a>
+            <div class="nav-links">
+                <a asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+                <a asp-controller="Vets" asp-action="Index">Vets</a>
+                <a asp-controller="Labs" asp-action="Index">Labs</a>
+                <a asp-controller="PetParents" asp-action="Index">Pet Parents</a>
+                <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-secondary">Logout</button>
+                </form>
+            </div>
+        </nav>
+    }
+    <main>
+        @RenderBody()
+    </main>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

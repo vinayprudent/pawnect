@@ -1,0 +1,95 @@
+@{
+    var catalog = ViewBag.Catalog as List<LabTestCatalogItemApiDto> ?? new List<LabTestCatalogItemApiDto>();
+    var consultationId = ViewBag.ConsultationId as int? ?? 0;
+    var appointmentId = ViewBag.AppointmentId as int? ?? 0;
+    var petId = ViewBag.PetId as int? ?? 0;
+    var ownerId = ViewBag.OwnerId as int? ?? 0;
+    var vetId = ViewBag.VetId as int? ?? 0;
+    var message = ViewBag.Message as string;
+    ViewData["Title"] = "Order Diagnostics";
+}
+
+<div class="vet-portal-page">
+    <h2 class="mb-2"><i class="bi bi-droplet me-2"></i>Order Diagnostics</h2>
+
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div class="alert alert-info">@message</div>
+        <a asp-action="Index" class="btn btn-pawnect">Back to Dashboard</a>
+    }
+    else if (consultationId <= 0)
+    {
+        <div class="alert alert-warning">Save the consultation first.</div>
+        <a asp-action="Consult" asp-route-appointmentId="@appointmentId" class="btn btn-pawnect">Back to Consult</a>
+    }
+    else
+    {
+    <p class="text-muted mb-4">Select tests for in-clinic collection. Lab will be assigned automatically or choose preferred.</p>
+
+    <form asp-action="OrderDiagnostics" method="post" id="orderForm">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="consultationId" value="@consultationId" />
+        <input type="hidden" name="petId" value="@petId" />
+        <input type="hidden" name="ownerId" value="@ownerId" />
+        <input type="hidden" name="vetId" value="@vetId" />
+        <input type="hidden" name="selectedTestsJson" id="selectedTestsJson" value="" />
+
+        <div class="card mb-4">
+            <div class="card-header">Lab</div>
+            <div class="card-body">
+                <label class="form-label">Assigned lab (optional)</label>
+                <input type="text" name="assignedLabName" class="form-control" placeholder="e.g. PawNect Lab – Downtown or leave blank for auto-assign" />
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">Select tests</div>
+            <div class="card-body">
+                <p class="small text-muted mb-3">Collection type: In-Clinic</p>
+                <div class="list-group">
+                    @foreach (var item in catalog)
+                    {
+                        <label class="list-group-item d-flex align-items-center">
+                            <input type="checkbox" class="form-check-input me-3 catalog-check" data-id="@item.Id" data-name="@item.Name" data-price="@item.Price" />
+                            <div class="flex-grow-1">
+                                <strong>@item.Name</strong>
+                                @if (!string.IsNullOrEmpty(item.Description))
+                                {
+                                    <span class="text-muted small"> – @item.Description</span>
+                                }
+                            </div>
+                            <span class="badge bg-teal">@item.Price.ToString("C")</span>
+                        </label>
+                    }
+                </div>
+                @if (!catalog.Any())
+                {
+                    <p class="text-muted mb-0">No tests in catalog. Contact admin.</p>
+                }
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-pawnect" id="btnSubmit">Create order</button>
+        <a asp-action="Consult" asp-route-appointmentId="@appointmentId" class="btn btn-outline-secondary ms-2">Back to Consult</a>
+    </form>
+    }
+</div>
+
+@section Scripts {
+<script>
+var form = document.getElementById('orderForm');
+if (form) form.addEventListener('submit', function(e) {
+    var checks = document.querySelectorAll('.catalog-check:checked');
+    var tests = [];
+    checks.forEach(function(c) {
+        tests.push({ testId: parseInt(c.dataset.id), testName: c.dataset.name, price: parseFloat(c.dataset.price) });
+    });
+    if (tests.length === 0) {
+        e.preventDefault();
+        alert('Select at least one test.');
+        return;
+    }
+    document.getElementById('selectedTestsJson').value = JSON.stringify(tests);
+});
+</script>
+}

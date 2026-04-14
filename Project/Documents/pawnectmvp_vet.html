@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>PawNect Vet MVP</title>
+<style>
+
+/* ---------------------------------------------------
+   GLOBAL STYLES
+--------------------------------------------------- */
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: #F5F7F8;
+  overflow-x: hidden;
+}
+
+h1, h2, h3 {
+  margin: 0 0 12px 0;
+}
+
+/* ---------------------------------------------------
+   SIDEBAR
+--------------------------------------------------- */
+
+.sidebar {
+  width: 240px;
+  background: #167A77;
+  position: fixed;
+  top: 0; left: 0;
+  height: 100vh;
+  padding: 25px 20px;
+  color: white;
+}
+
+.sidebar .logo {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+
+.sidebar a {
+  color: white;
+  text-decoration: none;
+  display: block;
+  padding: 12px 10px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 6px;
+  margin: 8px 0;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  background: #23B7AE;
+}
+
+/* ---------------------------------------------------
+   MAIN CONTAINER
+--------------------------------------------------- */
+
+.main {
+  margin-left: 260px;
+  padding: 30px;
+}
+
+.section {
+  padding: 40px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+}
+
+.card h3 {
+  margin-bottom: 6px;
+}
+
+.btn {
+  padding: 10px 16px;
+  background: #23B7AE;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+/* ---------------------------------------------------
+   CALENDAR GRID
+--------------------------------------------------- */
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.slot {
+  padding: 18px;
+  background: white;
+  border-radius: 6px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+
+.slot.booked {
+  background: #23B7AE;
+  color: white;
+}
+
+/* ---------------------------------------------------
+   CONSULT ROOM - HYBRID LAYOUT
+--------------------------------------------------- */
+
+.consult-container {
+  display: flex;
+  gap: 20px;
+}
+
+/* LEFT PANEL */
+.left-panel {
+  width: 280px;
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+}
+
+.left-panel .info-card {
+  background: white;
+  padding: 18px;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+  margin-bottom: 20px;
+}
+
+/* RIGHT PANEL */
+.right-panel {
+  flex: 1;
+}
+
+textarea {
+  width: 100%;
+  padding: 12px;
+  height: 120px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-top: 8px;
+}
+
+/* ---------------------------------------------------
+   CENTER MODALS (A)
+--------------------------------------------------- */
+
+.modal-bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background: white;
+  width: 420px;
+  padding: 25px;
+  border-radius: 10px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ---------------------------------------------------
+   RIGHT DRAWER (C)
+--------------------------------------------------- */
+
+.drawer {
+  position: fixed;
+  right: -400px;
+  top: 0;
+  width: 400px;
+  height: 100vh;
+  background: white;
+  box-shadow: -3px 0 10px rgba(0,0,0,0.15);
+  padding: 25px;
+  transition: right 0.3s ease;
+  overflow-y: auto;
+}
+
+.drawer.open {
+  right: 0;
+}
+
+.close-drawer {
+  float: right;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+</style>
+
+<script>
+function scrollToSection(id) {
+  document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+}
+
+function openDrawer() {
+  document.getElementById("drawer").classList.add("open");
+}
+
+function closeDrawer() {
+  document.getElementById("drawer").classList.remove("open");
+}
+
+function openModal(id) {
+  document.getElementById(id).style.display = "flex";
+}
+
+function closeModal(id) {
+  document.getElementById(id).style.display = "none";
+}
+</script>
+
+</head>
+
+<body>
+
+<!-- --------------------------------------------------
+     SIDEBAR
+-------------------------------------------------- -->
+<div class="sidebar">
+  <div class="logo">PawNect</div>
+  <a onclick="scrollToSection('dashboard')" class="active">Dashboard</a>
+  <a onclick="scrollToSection('calendar')">Calendar</a>
+  <a onclick="scrollToSection('consult')">Consult Room</a>
+  <a onclick="scrollToSection('patients')">Patients</a>
+  <a onclick="scrollToSection('records')">Records</a>
+  <a onclick="scrollToSection('billing')">Billing</a>
+  <a onclick="scrollToSection('labs')">Lab Requests</a>
+</div>
+
+<!-- --------------------------------------------------
+     MAIN CONTENT
+-------------------------------------------------- -->
+<div class="main">
+
+<!-- DASHBOARD -->
+<div class="section" id="dashboard">
+  <h1>Today’s Appointments</h1>
+
+  <div class="card-row">
+    <div class="card" onclick="openDrawer()">
+      <h3>11:00 AM — Online Consult</h3>
+      <p>Lucy • Labrador • Vomiting</p>
+      <div class="btn">View Case</div>
+    </div>
+
+    <div class="card" onclick="openDrawer()">
+      <h3>12:30 PM — Clinic Visit</h3>
+      <p>Max • Indie • Skin infection</p>
+      <div class="btn">View Case</div>
+    </div>
+
+    <div class="card" onclick="openDrawer()">
+      <h3>4:15 PM — Home Visit</h3>
+      <p>Bella • Beagle • Ear infection</p>
+      <div class="btn">View Case</div>
+    </div>
+  </div>
+
+  <div class="btn" onclick="openModal('modal-appointment')">+ Add Appointment</div>
+</div>
+
+
+<!-- CALENDAR -->
+<div class="section" id="calendar">
+  <h1>Calendar</h1>
+
+  <div class="calendar-grid">
+    <div class="slot">10:00</div>
+    <div class="slot booked" onclick="openDrawer()">11:00 — Lucy</div>
+    <div class="slot">12:00</div>
+    <div class="slot booked" onclick="openDrawer()">12:30 — Max</div>
+    <div class="slot">1:00</div>
+    <div class="slot booked" onclick="openDrawer()">4:15 — Bella</div>
+  </div>
+</div>
+
+
+<!-- CONSULT ROOM -->
+<div class="section" id="consult">
+  <h1>Consult Room</h1>
+
+  <div class="consult-container">
+
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+
+      <div class="info-card">
+        <h3>Lucy — Labrador</h3>
+        <p>Age: 3 yrs • 26 kg</p>
+        <p>Allergies: None</p>
+        <p>Chronic: None</p>
+        <hr>
+        <h4>Owner</h4>
+        <p>Debashish • +91 XXXXXXXX</p>
+        <hr>
+        <h4>Visit History</h4>
+        <p>Last visit: Today</p>
+        <p>Previous: Gastritis (2024)</p>
+      </div>
+
+      <div class="info-card">
+        <h4>Quick Actions</h4>
+        <div class="btn" onclick="openModal('modal-prescription')">Create Prescription</div>
+        <div class="btn" onclick="openModal('modal-lab')">Order Lab Test</div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+
+      <div class="card">
+        <h3>Diagnosis</h3>
+        <textarea placeholder="Enter diagnosis…"></textarea>
+      </div>
+
+      <div class="card">
+        <h3>Notes</h3>
+        <textarea placeholder="Enter notes…"></textarea>
+      </div>
+
+      <div class="btn" style="background:#167A77; padding:16px; margin-top:20px;">
+        Close Consultation & Save
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- PATIENTS -->
+<div class="section" id="patients">
+  <h1>Patients</h1>
+
+  <div class="card" onclick="openDrawer()">
+    <h3>Lucy — Labrador</h3>
+    <p>3 yrs • Vomiting • Last visit: Today</p>
+  </div>
+
+  <div class="card" onclick="openDrawer()">
+    <h3>Max — Indie</h3>
+    <p>4 yrs • Skin infection • Last visit: Today</p>
+  </div>
+</div>
+
+
+<!-- RECORDS -->
+<div class="section" id="records">
+  <h1>Medical Records</h1>
+
+  <div class="card">
+    <h3>Lucy — Record</h3>
+    <p>Diagnosis: Gastritis • Ondansetron</p>
+  </div>
+</div>
+
+
+<!-- BILLING -->
+<div class="section" id="billing">
+  <h1>Billing</h1>
+
+  <div class="card">
+    <h3>Lucy — Consultation</h3>
+    <p>₹600 — Paid (UPI)</p>
+  </div>
+</div>
+
+
+<!-- LAB REQUESTS -->
+<div class="section" id="labs">
+  <h1>Lab Requests</h1>
+
+  <div class="card">
+    <h3>Lucy — CBC, LFT</h3>
+    <p>Status: Sample collected • Report pending</p>
+  </div>
+
+  <div class="btn" onclick="openModal('modal-lab')">+ Create Lab Request</div>
+</div>
+
+</div>
+
+<!-- --------------------------------------------------
+     MODALS
+-------------------------------------------------- -->
+
+<!-- Add Appointment Modal -->
+<div class="modal-bg" id="modal-appointment">
+  <div class="modal">
+    <h2>Add Appointment</h2>
+    <p>Pet Name:</p>
+    <input style="width:100%;padding:8px;">
+    <br><br>
+    <p>Visit Type:</p>
+    <select style="width:100%;padding:8px;">
+      <option>Online Consult</option>
+      <option>In-Clinic Visit</option>
+      <option>Home Visit</option>
+    </select>
+    <br><br>
+    <div class="btn" onclick="closeModal('modal-appointment')">Save</div>
+    <div class="btn" style="background:#999" onclick="closeModal('modal-appointment')">Cancel</div>
+  </div>
+</div>
+
+<!-- Prescription Modal -->
+<div class="modal-bg" id="modal-prescription">
+  <div class="modal">
+    <h2>Create Prescription</h2>
+    <input style="width:100%;padding:8px;" placeholder="Medicine name">
+    <br><br>
+    <input style="width:100%;padding:8px;" placeholder="Dosage">
+    <br><br>
+    <input style="width:100%;padding:8px;" placeholder="Frequency">
+    <br><br>
+    <div class="btn" onclick="closeModal('modal-prescription')">Save Prescription</div>
+  </div>
+</div>
+
+<!-- Lab Modal -->
+<div class="modal-bg" id="modal-lab">
+  <div class="modal">
+    <h2>Order Lab Test</h2>
+    <select style="width:100%;padding:8px;">
+      <option>CBC</option>
+      <option>LFT</option>
+      <option>KFT</option>
+      <option>X-Ray</option>
+      <option>Ultrasound</option>
+    </select>
+    <br><br>
+    <div class="btn" onclick="closeModal('modal-lab')">Submit</div>
+  </div>
+</div>
+
+<!-- --------------------------------------------------
+     PATIENT DRAWER (Right Slide Panel)
+-------------------------------------------------- -->
+
+<div class="drawer" id="drawer">
+  <span class="close-drawer" onclick="closeDrawer()">✕</span>
+  <h2>Lucy — Labrador</h2>
+  <p>Age: 3 yrs • 26 kg</p>
+  <p>Owner: Debashish</p>
+  <p>Last Visit: Today</p>
+
+  <hr>
+
+  <h3>Visit History</h3>
+  <p>Today — Vomiting</p>
+  <p>2024 — Gastritis</p>
+
+  <hr>
+
+  <h3>Actions</h3>
+  <div class="btn" onclick="scrollToSection('consult')">Start Consultation</div>
+  <div class="btn" onclick="openModal('modal-prescription')">Create Prescription</div>
+  <div class="btn" onclick="openModal('modal-lab')">Order Lab Test</div>
+</div>
+
+</body>
+</html>

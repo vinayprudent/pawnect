@@ -1,0 +1,39 @@
+@model IEnumerable<UserDto>
+@{
+    ViewData["Title"] = "Veterinary Clinics";
+}
+<h1>Veterinary Clinics</h1>
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+@if (TempData["Error"] != null) { <div class="alert alert-danger">@TempData["Error"]</div> }
+<div class="card">
+    <p><a asp-action="Create" class="btn btn-primary">Add Veterinary Clinic</a></p>
+    <table>
+        <thead>
+            <tr>
+                <th>Clinic / Contact</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Location</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var u in Model)
+            {
+                <tr>
+                    <td>@(u.OrganizationName ?? $"{u.FirstName} {u.LastName}")</td>
+                    <td>@u.Email</td>
+                    <td>@u.PhoneNumber</td>
+                    <td>@(u.City != null ? $"{u.City}, {u.State}" : "-")</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@u.Id" class="btn btn-secondary">Edit</a>
+                        <form asp-action="Delete" asp-route-id="@u.Id" method="post" style="display:inline;" onsubmit="return confirm('Remove this veterinary clinic?');">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @if (!Model.Any()) { <p style="color: var(--muted);">No veterinary clinics yet. <a asp-action="Create">Add one</a>.</p> }
+</div>

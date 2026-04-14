@@ -1,0 +1,18 @@
+@model UserDto
+@{
+    ViewData["Title"] = "Pet Parent Details";
+}
+<h1>Pet Parent Details</h1>
+<div class="card">
+    <p><strong>Name:</strong> @Model.FirstName @Model.LastName</p>
+    <p><strong>Email:</strong> @Model.Email</p>
+    <p><strong>Phone:</strong> @(Model.PhoneNumber ?? "-")</p>
+    <p><strong>Address:</strong> @(Model.Address ?? "-")</p>
+    <p><strong>City:</strong> @(Model.City ?? "-")</p>
+    <p><strong>State:</strong> @(Model.State ?? "-")</p>
+    <p><strong>Zip:</strong> @(Model.ZipCode ?? "-")</p>
+    <p>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+        <a asp-action="Index" class="btn btn-secondary">Back to list</a>
+    </p>
+</div>

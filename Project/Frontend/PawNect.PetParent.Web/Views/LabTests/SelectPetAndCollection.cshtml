@@ -1,0 +1,57 @@
+@model LabOrderSelectPetViewModel
+@{
+    ViewData["Title"] = "Select pet & collection";
+}
+
+<div class="lab-pet-collection-page">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Lab tests</a></li>
+            <li class="breadcrumb-item"><a asp-action="SelectTestType">Select test</a></li>
+            <li class="breadcrumb-item active">Pet & collection</li>
+        </ol>
+    </nav>
+    <h2 class="mb-3">Select pet &amp; collection type</h2>
+    <p class="text-muted small mb-4">Test: <strong>@Model.TestDisplayName</strong> — ₹@Model.Price.ToString("N0") · @Model.SampleType</p>
+
+    <form asp-action="SelectPetAndCollection" method="post" class="mb-4">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="TestId" />
+        <input type="hidden" asp-for="TestType" />
+        <input type="hidden" asp-for="TestDisplayName" />
+        <input type="hidden" asp-for="Price" />
+        <input type="hidden" asp-for="SampleType" />
+
+        <div class="card mb-3">
+            <div class="card-header">Pet selection</div>
+            <div class="card-body">
+                <label class="form-label">Select pet</label>
+                <select asp-for="SelectedPetId" class="form-select" required>
+                    @foreach (var p in Model.Pets)
+                    {
+                        <option value="@p.Id">@p.Name (@p.Species)</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header">Collection type</div>
+            <div class="card-body">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" asp-for="CollectionType" value="Home" id="collHome" />
+                    <label class="form-check-label" for="collHome">Home collection</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" asp-for="CollectionType" value="InClinic" id="collClinic" />
+                    <label class="form-check-label" for="collClinic">In-clinic</label>
+                </div>
+                <p class="small text-muted mt-2 mb-0">PawNect will assign a lab internally. No lab selection needed.</p>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-pawnect">Continue to review</button>
+    </form>
+
+    <a asp-action="SelectTestType" class="btn btn-outline-secondary btn-sm">Back to test selection</a>
+</div>

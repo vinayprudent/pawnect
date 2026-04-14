@@ -1,0 +1,75 @@
+@model VetViewModel
+@using PawNect.PetParent.Web.Models
+@{
+    var consultMode = ViewBag.ConsultMode as string ?? ConsultMode.InClinic;
+    var isOnline = consultMode == ConsultMode.Online;
+    ViewData["Title"] = "Vet Profile - " + Model.Name;
+}
+
+<div class="vet-profile-page">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" asp-route-mode="@consultMode">@(isOnline ? "Online Consultation" : "Find Vets")</a></li>
+            <li class="breadcrumb-item active">@Model.Name</li>
+        </ol>
+    </nav>
+    <div class="card vet-profile-card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <h2 class="mb-2">@Model.Name</h2>
+                    <p class="text-muted mb-2">@Model.Specialization · @Model.Degree</p>
+                    <p class="small mb-2"><span class="text-warning"><i class="bi bi-star-fill"></i> @Model.Rating</span> · @Model.ExperienceYears years experience</p>
+                    <p class="mb-3"><strong>Consultation fee:</strong> $@Model.ConsultationFee</p>
+                    @if (!string.IsNullOrEmpty(Model.Bio))
+                    {
+                        <h6>About</h6>
+                        <p class="small">@Model.Bio</p>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Qualifications))
+                    {
+                        <h6 class="mt-3">Qualifications</h6>
+                        <p class="small">@Model.Qualifications</p>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.AreasOfExpertise))
+                    {
+                        <h6 class="mt-3">Areas of expertise</h6>
+                        <p class="small">@Model.AreasOfExpertise</p>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.PracticeRegistrationNumber))
+                    {
+                        <p class="small mt-2">Practice registration: @Model.PracticeRegistrationNumber</p>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.TypicalCasesHandled))
+                    {
+                        <h6 class="mt-3">Typical cases</h6>
+                        <p class="small">@Model.TypicalCasesHandled</p>
+                    }
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h6>Clinic</h6>
+                            <p class="mb-1 fw-medium">@Model.ClinicName</p>
+                            <p class="small text-muted mb-2">@Model.ClinicAddress</p>
+                            <h6>Weekly availability</h6>
+                            <p class="small mb-3">@Model.WeeklyAvailability</p>
+                            @if (isOnline)
+                            {
+                                <a asp-action="SlotSelect" asp-route-vetId="@Model.Id" asp-route-mode="@ConsultMode.Online" class="btn btn-pawnect w-100"><i class="bi bi-camera-video me-1"></i>Book Online Consultation</a>
+                            }
+                            else
+                            {
+                                <a asp-action="SlotSelect" asp-route-vetId="@Model.Id" class="btn btn-pawnect w-100">Book In-Clinic Appointment</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .vet-profile-card { border-radius: 14px; border: 1px solid var(--border); }
+</style>

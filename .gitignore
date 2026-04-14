@@ -1,0 +1,64 @@
+# Publish profiles may contain credentials — do not commit
+*.PublishSettings
+**/Properties/PublishProfiles/*.pubxml.user
+
+# Build / .NET
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]uild/
+*.cache
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Visual Studio / MSBuild
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.rsuser
+
+# Rider / VS Code / Cursor
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# NuGet
+*.nupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+
+# Test
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.trx
+*.coverage
+*.coveragexml
+
+# Local / secrets (use User Secrets or env vars for real values)
+**/appsettings.*.local.json
+**/secrets.json
+
+# Azure
+deploy/publish/
+
+# Local scratch build output
+.tmp-build/
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini

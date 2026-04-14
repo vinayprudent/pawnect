@@ -1,0 +1,25 @@
+@model LabOrderDetailViewModel
+@{
+    ViewData["Title"] = "Order confirmed";
+}
+
+<div class="lab-confirm-success text-center">
+    <div class="card mx-auto" style="max-width: 480px;">
+        <div class="card-body p-4">
+            <div class="rounded-circle bg-success bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width:64px;height:64px;">
+                <i class="bi bi-check-lg text-success" style="font-size: 2rem;"></i>
+            </div>
+            <h4 class="mb-2">Lab order confirmed</h4>
+            <p class="text-muted small mb-4">Order ID: <strong>@Model.OrderId</strong></p>
+            <div class="text-start border rounded p-3 mb-3">
+                <p class="mb-1"><strong>Test:</strong> @Model.TestDisplayName</p>
+                <p class="mb-1"><strong>Pet:</strong> @Model.PetName</p>
+                <p class="mb-1"><strong>Collection:</strong> @(Model.CollectionType == "Home" ? "Home collection" : "In-clinic")</p>
+                <p class="mb-1"><strong>Amount:</strong> ₹@Model.Price.ToString("N0")</p>
+                <p class="mb-0"><strong>Status:</strong> @Model.Status</p>
+            </div>
+            <p class="small text-muted">PawNect will assign a lab and contact you for sample collection. Payment is placeholder for this demo.</p>
+            <a asp-action="OrderStatus" class="btn btn-pawnect">View my lab orders</a>
+        </div>
+    </div>
+</div>

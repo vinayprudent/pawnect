@@ -1,0 +1,59 @@
+@model List<SlotViewModel>
+@using PawNect.PetParent.Web.Models
+@{
+    var vet = ViewBag.Vet as VetViewModel;
+    var consultMode = ViewBag.ConsultMode as string ?? ConsultMode.InClinic;
+    var isOnline = consultMode == ConsultMode.Online;
+    ViewData["Title"] = (isOnline ? "Online consult – " : "Select slot – ") + (vet?.Name ?? "Vet");
+}
+
+<div class="slot-select-page">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" asp-route-mode="@consultMode">@(isOnline ? "Online Consultation" : "Find Vets")</a></li>
+            <li class="breadcrumb-item"><a asp-action="Details" asp-route-id="@vet?.Id" asp-route-mode="@consultMode">@vet?.Name</a></li>
+            <li class="breadcrumb-item active">Select date & time</li>
+        </ol>
+    </nav>
+    @if (vet != null)
+    {
+        <div class="card mb-3">
+            <div class="card-body py-2">
+                <strong>@vet.Name</strong> · @vet.ClinicName · @(isOnline ? "Video consultation" : "Consultation") @(vet.ConsultationFee > 0 ? "· ₹" + vet.ConsultationFee : "")
+            </div>
+        </div>
+    }
+    <h5 class="mb-3">@(isOnline ? "Choose your video slot" : "Select date & time")</h5>
+    <p class="text-muted small mb-3">Slots are set by the vet (60-min batches by default; max patients per slot). Green = available, Grey = full for this batch.</p>
+    <div class="slot-grid">
+        @foreach (var slot in Model)
+        {
+            if (slot.IsAvailable)
+            {
+                <a asp-action="Verify" asp-route-vetId="@vet?.Id" asp-route-date="@slot.Date" asp-route-time="@slot.Time" asp-route-mode="@consultMode" class="slot-pill slot-available">
+                    @slot.DisplayText
+                </a>
+            }
+            else
+            {
+                <span class="slot-pill slot-booked">@slot.DisplayText</span>
+            }
+        }
+    </div>
+</div>
+
+<style>
+    .slot-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .slot-pill {
+        display: inline-block;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        text-decoration: none;
+        color: inherit;
+        border: 1px solid var(--border);
+    }
+    .slot-available { background: rgba(22,122,119,0.1); border-color: var(--teal); color: var(--teal); }
+    .slot-available:hover { background: rgba(22,122,119,0.2); }
+    .slot-booked { background: #e9ecef; color: #6c757d; cursor: not-allowed; }
+</style>

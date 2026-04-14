@@ -1,0 +1,232 @@
+@{
+    ViewData["Title"] = "Home";
+}
+@* Vet users are redirected to VetPortal/Index from HomeController; this view is for guests and Pet Parents only *@
+<div class="pawnect-home">
+    <div class="home-hero">
+        <span class="badge-hero">Pet Parent – Everything in one place</span>
+        <h1 class="hero-title">Everything your pet needs, in one place.</h1>
+        <p class="hero-sub">
+            Book online consults, clinic visits, lab tests or home care for your pets – with records and services connected.
+        </p>
+        <div class="quick-actions-home">
+            <a asp-controller="Vets" asp-action="Index" class="qa-card-home">
+                <div class="qa-icon"><i class="bi bi-hospital"></i></div>
+                <div class="qa-title">In-Clinic Appointment</div>
+                <div class="qa-sub">Find vets and book clinic visits.</div>
+            </a>
+            <a asp-controller="Vets" asp-action="Index" asp-route-mode="Online" class="qa-card-home">
+                <div class="qa-icon"><i class="bi bi-camera-video"></i></div>
+                <div class="qa-title">Online Consultation</div>
+                <div class="qa-sub">Video call with a verified vet. Book a slot and join online.</div>
+            </a>
+            <a asp-controller="LabTests" asp-action="Index" class="qa-card-home">
+                <div class="qa-icon"><i class="bi bi-droplet"></i></div>
+                <div class="qa-title">Lab Tests</div>
+                <div class="qa-sub">Preventive health tests, wellness packages &amp; home collection.</div>
+            </a>
+            @if (SessionHelper.IsAuthenticated(Context.Session))
+            {
+                <a asp-controller="Consultations" asp-action="Index" class="qa-card-home">
+                    <div class="qa-icon"><i class="bi bi-clipboard2-pulse"></i></div>
+                    <div class="qa-title">Consultations</div>
+                    <div class="qa-sub">View vitals, notes, diagnostics &amp; reports.</div>
+                </a>
+                <a asp-controller="Pets" asp-action="Index" class="qa-card-home">
+                    <div class="qa-icon"><i class="bi bi-heart"></i></div>
+                    <div class="qa-title">Profile / My Pets</div>
+                    <div class="qa-sub">View and manage your pets.</div>
+                </a>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Login" class="qa-card-home">
+                    <div class="qa-icon"><i class="bi bi-person"></i></div>
+                    <div class="qa-title">Profile / My Pets</div>
+                    <div class="qa-sub">Sign in to add pets and book appointments.</div>
+                </a>
+            }
+        </div>
+        <p class="home-note">Search vets without signing in. Login to view vet details, book appointments, and manage your pets.</p>
+    </div>
+
+    <section class="section-practo mt-5">
+        <h2 class="section-title">Connect with pet care services</h2>
+        <p class="section-sub">Find vets, book appointments, and keep health records in one place.</p>
+        <div class="services-grid">
+            <div class="service-card-pawnect">
+                <span class="service-tag">Search</span>
+                <h3 class="service-title">Find Vets</h3>
+                <p class="service-sub">Search by specialization, experience, fee, and availability.</p>
+                <a asp-controller="Vets" asp-action="Index" class="btn btn-pawnect btn-sm">Search Vets</a>
+            </div>
+            <div class="service-card-pawnect">
+                <span class="service-tag">Appointments</span>
+                <h3 class="service-title">Book appointments</h3>
+                <p class="service-sub">Schedule in-clinic vet visits. Login to book.</p>
+                <a asp-controller="Vets" asp-action="Index" class="btn btn-outline-pawnect btn-sm">Find &amp; Book</a>
+            </div>
+            <div class="service-card-pawnect">
+                <span class="service-tag">Profile</span>
+                <h3 class="service-title">My Pets &amp; records</h3>
+                <p class="service-sub">Add pets and view health records. Login required.</p>
+                @if (SessionHelper.IsAuthenticated(Context.Session))
+                { <a asp-controller="Pets" asp-action="Index" class="btn btn-pawnect btn-sm">My Pets</a> }
+                else
+                { <a asp-controller="Account" asp-action="Login" class="btn btn-outline-pawnect btn-sm">Login</a> }
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section mt-5">
+        <div class="cta-card">
+            <h3>Ready to get started?</h3>
+            <p class="mb-3">Add your pets and start managing their care today.</p>
+            @if (!SessionHelper.IsAuthenticated(Context.Session))
+            {
+                <a asp-controller="Vets" asp-action="Index" class="btn btn-light btn-lg me-2">Find Vets</a>
+                <a asp-controller="Account" asp-action="Register" class="btn btn-outline-light btn-lg me-2">Register</a>
+                <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-lg">Login</a>
+            }
+            else
+            {
+                <a asp-controller="Vets" asp-action="Index" class="btn btn-light btn-lg me-2">Book Appointment</a>
+                <a asp-controller="Pets" asp-action="Index" class="btn btn-outline-light btn-lg">My Pets</a>
+            }
+        </div>
+    </section>
+</div>
+
+<style>
+    .pawnect-home { max-width: 960px; margin: 0 auto; }
+    .home-hero {
+        padding: 2rem 1.5rem;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #e5fbf5 0, #ffffff 45%, #dff4f0 100%);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(215,226,230,0.8);
+        box-shadow: 0 18px 40px rgba(15,47,55,0.12);
+    }
+    .home-hero::after {
+        content: "";
+        position: absolute;
+        right: -40px;
+        top: -40px;
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--mint), var(--teal));
+        opacity: 0.18;
+        pointer-events: none;
+    }
+    .badge-hero {
+        display: inline-block;
+        font-size: 0.7rem;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(22,122,119,0.08);
+        color: #145a56;
+        margin-bottom: 0.5rem;
+    }
+    .hero-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #12333a;
+        margin-bottom: 0.5rem;
+    }
+    .hero-sub {
+        font-size: 0.95rem;
+        color: #53616a;
+        margin-bottom: 1.5rem;
+        max-width: 520px;
+        margin-inline: auto;
+    }
+    .quick-actions-home {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1rem;
+        max-width: 840px;
+        margin: 0 auto 1rem;
+        position: relative;
+        z-index: 1;
+    }
+    .qa-card-home {
+        border-radius: 14px;
+        border: 1px solid rgba(207,224,227,0.9);
+        background: rgba(255,255,255,0.96);
+        padding: 1rem;
+        text-decoration: none;
+        color: inherit;
+        transition: 0.15s;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        display: block;
+    }
+    .qa-card-home:hover:not(.qa-card-disabled) {
+        border-color: var(--teal);
+        box-shadow: 0 10px 24px rgba(22,122,119,0.2);
+        transform: translateY(-2px);
+        color: inherit;
+    }
+    .qa-card-disabled { opacity: 0.85; cursor: default; }
+    .qa-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(22,122,119,0.09);
+        margin: 0 auto 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        color: var(--teal);
+    }
+    .qa-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .qa-sub { font-size: 0.8rem; color: #6a757e; }
+    .home-note { font-size: 0.8rem; color: #6f7b84; margin-top: 0.5rem; }
+
+    .section-title { font-size: 1.35rem; font-weight: 600; color: var(--charcoal); margin-bottom: 0.25rem; }
+    .section-sub { font-size: 0.9rem; color: #7c8891; margin-bottom: 1rem; }
+    .services-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+    }
+    .service-card-pawnect {
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: #fff;
+        padding: 1.25rem;
+        box-shadow: 0 6px 14px rgba(0,0,0,0.05);
+    }
+    .service-tag {
+        display: inline-block;
+        font-size: 0.7rem;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: rgba(162,232,214,0.2);
+        color: #145a56;
+        margin-bottom: 0.5rem;
+    }
+    .service-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .service-sub { font-size: 0.85rem; color: #5e6a72; margin-bottom: 0.75rem; }
+
+    .cta-section { margin-bottom: 2rem; }
+    .cta-card {
+        background: linear-gradient(135deg, var(--teal), #145a56);
+        color: #fff;
+        border-radius: 16px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 12px 28px rgba(22,122,119,0.35);
+    }
+    .cta-card h3 { font-size: 1.35rem; margin-bottom: 0.5rem; }
+    .cta-card .btn-light { color: var(--teal); }
+    .cta-card .btn-outline-light:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+    @@media (max-width: 900px) {
+        .quick-actions-home { grid-template-columns: repeat(2, 1fr); }
+        .services-grid { grid-template-columns: 1fr; }
+    }
+</style>

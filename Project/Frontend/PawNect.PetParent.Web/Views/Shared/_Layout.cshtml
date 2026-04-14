@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - PawNect</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+    <style>
+        :root {
+            --mint: #a2e8d6;
+            --teal: #167a77;
+            --soft-grey: #f5f7f8;
+            --charcoal: #1c262b;
+            --border: #dde3e7;
+            --white: #ffffff;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+            background: radial-gradient(circle at top left, #e8faf5 0, #f5f7f8 40%, #edf2f4 100%);
+            color: var(--charcoal);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .navbar {
+            background: rgba(255,255,255,0.96);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(15,47,55,0.08);
+        }
+        .navbar-brand-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: inherit;
+        }
+        .navbar-brand-wrap img {
+            height: 42px;
+            width: auto;
+        }
+        .navbar .brand-text {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--teal);
+        }
+        .navbar .brand-tagline {
+            font-size: 0.7rem;
+            color: #6c7880;
+            display: block;
+        }
+        .nav-link {
+            color: #4d5a63 !important;
+            font-weight: 500;
+        }
+        .nav-link:hover, .nav-link.active { color: var(--teal) !important; }
+        .btn-pawnect {
+            background: var(--teal);
+            border-color: var(--teal);
+            color: #fff;
+            box-shadow: 0 6px 14px rgba(22,122,119,0.3);
+        }
+        .btn-pawnect:hover {
+            background: #145a56;
+            border-color: #145a56;
+            color: #fff;
+        }
+        .btn-outline-pawnect {
+            border-color: var(--teal);
+            color: var(--teal);
+        }
+        .btn-outline-pawnect:hover {
+            background: rgba(22,122,119,0.08);
+            border-color: var(--teal);
+            color: var(--teal);
+        }
+        .badge.bg-teal { background-color: var(--teal); color: #fff; }
+        .main-content { flex: 1; }
+        .footer-pawnect {
+            background: var(--charcoal);
+            color: #94a3b8;
+            padding: 1.5rem 0;
+            margin-top: auto;
+        }
+    </style>
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container">
+                <a class="navbar-brand-wrap" asp-controller="Home" asp-action="Index">
+                    <img src="~/images/PawNect Logo.png" alt="PawNect" />
+                    <div>
+                        <span class="brand-text">PawNect</span>
+                        <span class="brand-tagline">Connecting Every Paw to Care</span>
+                    </div>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-house me-1"></i>Home
+                            </a>
+                        </li>
+                        @* Find Vets / Find Labs: only for guests and Pet Parents (not for Vet) *@
+                        @if (!SessionHelper.IsVet(Context.Session))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Vets" ? "active" : "")" asp-controller="Vets" asp-action="Index">
+                                    <i class="bi bi-search me-1"></i>Find Vets
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Labs" ? "active" : "")" asp-controller="Labs" asp-action="Index">
+                                    <i class="bi bi-droplet me-1"></i>Find Labs
+                                </a>
+                            </li>
+                        }
+                        @if (SessionHelper.IsAuthenticated(Context.Session))
+                        {
+                            @* Pet Parent: full nav (Parent menu) *@
+                            @if (SessionHelper.IsParent(Context.Session))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Pets" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" asp-controller="Pets" asp-action="Index">
+                                        <i class="bi bi-list me-1"></i>My Pets
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Pets" asp-action="Create">
+                                        <i class="bi bi-plus-circle me-1"></i>Add Pet
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Appointments" ? "active" : "")" asp-controller="Appointments" asp-action="Index">
+                                        <i class="bi bi-calendar-check me-1"></i>Appointments
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Consultations" ? "active" : "")" asp-controller="Consultations" asp-action="Index">
+                                        <i class="bi bi-clipboard2-pulse me-1"></i>Consultations
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "LabTests" ? "active" : "")" asp-controller="LabTests" asp-action="Index">
+                                        <i class="bi bi-droplet me-1"></i>Lab Tests
+                                    </a>
+                                </li>
+                            }
+                            @* Vet: portal menu – manage consultations, order diagnostics, reports, medical guidance (no Parent menu) *@
+                            @if (SessionHelper.IsVet(Context.Session))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "VetPortal" && ViewContext.RouteData.Values["action"]?.ToString() == "Consultations" ? "active" : "")" asp-controller="VetPortal" asp-action="Consultations">
+                                        <i class="bi bi-clipboard2-pulse me-1"></i>Consultations
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "VetPortal" && ViewContext.RouteData.Values["action"]?.ToString() == "OrderDiagnostics" ? "active" : "")" asp-controller="VetPortal" asp-action="OrderDiagnostics">
+                                        <i class="bi bi-droplet me-1"></i>Order Diagnostics
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "VetPortal" && ViewContext.RouteData.Values["action"]?.ToString() == "Reports" ? "active" : "")" asp-controller="VetPortal" asp-action="Reports">
+                                        <i class="bi bi-file-earmark-medical me-1"></i>Reports
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "VetPortal" && ViewContext.RouteData.Values["action"]?.ToString() == "MedicalGuidance" ? "active" : "")" asp-controller="VetPortal" asp-action="MedicalGuidance">
+                                        <i class="bi bi-journal-medical me-1"></i>Medical Guidance
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "VetPortal" && ViewContext.RouteData.Values["action"]?.ToString() == "Availability" ? "active" : "")" asp-controller="VetPortal" asp-action="Availability">
+                                        <i class="bi bi-calendar3 me-1"></i>My Availability
+                                    </a>
+                                </li>
+                            }
+                            @* Lab: minimal nav; Lab portal is separate or coming soon *@
+                            @if (SessionHelper.IsLab(Context.Session))
+                            {
+                                <li class="nav-item">
+                                    <span class="nav-link text-muted"><i class="bi bi-droplet me-1"></i>Lab portal (coming soon)</span>
+                                </li>
+                            }
+                        }
+                    </ul>
+                    <ul class="navbar-nav">
+                        @if (SessionHelper.IsAuthenticated(Context.Session))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-person-circle me-1"></i>@(SessionHelper.GetUserName(Context.Session) ?? "Profile")
+                                    @if (SessionHelper.IsVet(Context.Session)) { <span class="badge bg-teal ms-1">Vet</span> }
+                                    @if (SessionHelper.IsLab(Context.Session)) { <span class="badge bg-teal ms-1">Lab</span> }
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    @if (SessionHelper.IsParent(Context.Session))
+                                    {
+                                        <li><a class="dropdown-item" asp-controller="Pets" asp-action="Index"><i class="bi bi-heart me-2"></i>My Pets</a></li>
+                                    }
+                                    <li><span class="dropdown-item-text small text-muted">@SessionHelper.GetUserEmail(Context.Session)</span></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="dropdown-item"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Login">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i>Login
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-pawnect btn-sm ms-2" asp-controller="Account" asp-action="Register">Register</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <div class="container py-4">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @RenderBody()
+        </div>
+    </main>
+
+    <footer class="footer-pawnect">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <img src="~/images/PawNect Logo.png" alt="PawNect" style="height: 28px; opacity: 0.9;" />
+                    <span class="ms-2">Connecting pet parents with the care their pets deserve.</span>
+                </div>
+                <div class="col-md-6 text-md-end mt-2 mt-md-0">
+                    <small>&copy; @DateTime.Now.Year PawNect. All rights reserved.</small>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

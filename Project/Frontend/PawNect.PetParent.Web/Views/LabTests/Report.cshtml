@@ -1,0 +1,55 @@
+@model LabReportPageViewModel
+@{
+    ViewData["Title"] = "Lab report";
+}
+
+<div class="lab-report-page">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="OrderStatus">My lab orders</a></li>
+            <li class="breadcrumb-item active">Report</li>
+        </ol>
+    </nav>
+    <h2 class="mb-3"><i class="bi bi-file-earmark-pdf me-2"></i>Lab report</h2>
+    <p class="text-muted small mb-4">@Model.PetName — @Model.TestDisplayName · Order @Model.OrderId</p>
+
+    <div class="card mb-4">
+        <div class="card-header">Report PDF</div>
+        <div class="card-body">
+            <p class="mb-2">
+                <i class="bi bi-file-earmark-pdf text-danger me-2"></i>
+                <a href="@(Model.ReportUrl ?? "#")" target="_blank" rel="noopener">@Model.ReportFileName</a>
+            </p>
+            <p class="small text-muted mb-0">(Placeholder link for demo. In production, this would open or download the report.)</p>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.InterpretationNote))
+    {
+        <div class="card mb-4">
+            <div class="card-header">Interpretation note</div>
+            <div class="card-body">
+                <p class="mb-0">@Model.InterpretationNote</p>
+                @if (!string.IsNullOrEmpty(Model.ReviewedAt))
+                {
+                    <p class="small text-muted mt-2 mb-0">Reviewed: @Model.ReviewedAt</p>
+                }
+            </div>
+        </div>
+    }
+
+    <div class="card mb-4">
+        <div class="card-header">Next steps</div>
+        <div class="card-body">
+            <p class="small mb-3">Discuss results with a vet? Book an online consult or in-clinic appointment.</p>
+            <a asp-controller="Vets" asp-action="Index" asp-route-mode="Online" class="btn btn-pawnect btn-sm me-2">
+                <i class="bi bi-camera-video me-1"></i>Book Online Consult
+            </a>
+            <a asp-controller="Vets" asp-action="Index" class="btn btn-outline-pawnect btn-sm">
+                <i class="bi bi-hospital me-1"></i>Book In-Clinic Appointment
+            </a>
+        </div>
+    </div>
+
+    <a asp-action="OrderStatus" class="btn btn-outline-secondary btn-sm">Back to my lab orders</a>
+</div>

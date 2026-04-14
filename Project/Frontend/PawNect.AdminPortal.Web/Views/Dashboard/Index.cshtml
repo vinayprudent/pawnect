@@ -1,0 +1,12 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<h1>Dashboard</h1>
+<div class="card">
+    <p>Welcome to PawNect Admin. Use the navigation to manage Vets, Labs, and Pet Parents.</p>
+    <ul style="margin: 0.5rem 0 0 1.5rem;">
+        <li><a asp-controller="Vets" asp-action="Index">Manage Veterinary Clinics</a></li>
+        <li><a asp-controller="Labs" asp-action="Index">Manage Laboratories</a></li>
+        <li><a asp-controller="PetParents" asp-action="Index">Manage Pet Parents</a></li>
+    </ul>
+</div>

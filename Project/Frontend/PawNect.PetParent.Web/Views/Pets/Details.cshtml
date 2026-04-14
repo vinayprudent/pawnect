@@ -1,0 +1,118 @@
+@model PetViewModel
+@{
+    ViewData["Title"] = $"Pet Details - {Model?.Name}";
+}
+
+@if (Model != null)
+{
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                @if (!string.IsNullOrEmpty(Model.ProfileImageUrl))
+                {
+                    <img src="@Model.ProfileImageUrl" class="card-img-top" alt="@Model.Name" style="height: 300px; object-fit: cover;">
+                }
+                else
+                {
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                        <i class="bi bi-image text-muted" style="font-size: 5rem;"></i>
+                    </div>
+                }
+                <div class="card-body text-center">
+                    <h3 class="card-title">@Model.Name</h3>
+                    <span class="badge badge-species fs-6">@Model.Species</span>
+                    <span class="badge @(Model.Status == "Active" ? "badge-status-active" : "badge-status-inactive") fs-6 ms-1">
+                        @Model.Status
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0"><i class="bi bi-info-circle me-2"></i>Pet Information</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Breed</label>
+                            <p class="mb-0 fw-medium">@(Model.Breed ?? "Not specified")</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Date of Birth</label>
+                            <p class="mb-0 fw-medium">@Model.DateOfBirth.ToShortDateString() (@Model.Age years old)</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Weight</label>
+                            <p class="mb-0 fw-medium">@(Model.WeightKg.HasValue ? $"{Model.WeightKg.Value} kg" : "Not specified")</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Color</label>
+                            <p class="mb-0 fw-medium">@(Model.Color ?? "Not specified")</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Microchip ID</label>
+                            <p class="mb-0 fw-medium">@(Model.MicrochipId ?? "Not registered")</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Registered On</label>
+                            <p class="mb-0 fw-medium">@Model.CreatedAt.ToShortDateString()</p>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Description))
+                    {
+                        <div class="mb-3">
+                            <label class="text-muted small">Description</label>
+                            <p class="mb-0">@Model.Description</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h4 class="mb-0"><i class="bi bi-lightning me-2"></i>Quick Actions</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-pencil me-2"></i>Edit Pet
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="#" class="btn btn-outline-success w-100">
+                                <i class="bi bi-clipboard2-pulse me-2"></i>Health Records
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="#" class="btn btn-outline-info w-100">
+                                <i class="bi bi-calendar-plus me-2"></i>Book Appointment
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Back to My Pets
+        </a>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle me-2"></i>Pet not found.
+    </div>
+}

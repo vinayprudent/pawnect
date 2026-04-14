@@ -1,0 +1,71 @@
+@model RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="auth-page">
+    <div class="auth-card">
+        <div class="auth-header">
+            <img src="~/images/PawNect Logo.png" alt="PawNect" class="auth-logo" />
+            <h1 class="auth-title">Create your account</h1>
+            <p class="auth-sub">Join PawNect to manage your pets and their care.</p>
+        </div>
+        <form asp-action="Register" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <div class="mb-2">
+                <label asp-for="FullName" class="form-label"></label>
+                <input asp-for="FullName" class="form-control form-control-pawnect" placeholder="Enter your full name" />
+                <span asp-validation-for="FullName" class="text-danger small"></span>
+            </div>
+            <div class="mb-2">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control form-control-pawnect" placeholder="you@example.com" autocomplete="email" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+            <div class="mb-2">
+                <label asp-for="PhoneNumber" class="form-label"></label>
+                <input asp-for="PhoneNumber" class="form-control form-control-pawnect" placeholder="Phone number" />
+                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+            </div>
+            <div class="mb-2">
+                <label asp-for="Address" class="form-label"></label>
+                <input asp-for="Address" class="form-control form-control-pawnect" placeholder="Address" />
+                <span asp-validation-for="Address" class="text-danger small"></span>
+            </div>
+            <div class="mb-2">
+                <label asp-for="City" class="form-label"></label>
+                <input asp-for="City" class="form-control form-control-pawnect" placeholder="City" />
+                <span asp-validation-for="City" class="text-danger small"></span>
+            </div>
+            <button type="submit" class="btn btn-pawnect w-100 mb-2">Register</button>
+            <p class="text-center small text-muted mb-0">
+                Already have an account? <a asp-action="Login" class="text-teal fw-medium">Sign in</a>
+            </p>
+        </form>
+    </div>
+</div>
+
+@section Styles {
+<style>
+    .auth-page { max-width: 420px; margin: 2rem auto; }
+    .auth-card {
+        background: rgba(255,255,255,0.96);
+        border-radius: 18px;
+        padding: 2rem;
+        border: 1px solid var(--border);
+        box-shadow: 0 18px 40px rgba(15,47,55,0.15);
+    }
+    .auth-header { text-align: center; margin-bottom: 1.5rem; }
+    .auth-logo { height: 48px; margin-bottom: 0.75rem; }
+    .auth-title { font-size: 1.35rem; font-weight: 700; color: var(--teal); margin-bottom: 0.25rem; }
+    .auth-sub { font-size: 0.9rem; color: #6c7880; }
+    .form-control-pawnect:focus {
+        border-color: var(--teal);
+        box-shadow: 0 0 0 0.2rem rgba(22,122,119,0.2);
+    }
+    .text-teal { color: var(--teal); }
+</style>
+}
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

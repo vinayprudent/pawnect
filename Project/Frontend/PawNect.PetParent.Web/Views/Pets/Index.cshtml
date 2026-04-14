@@ -1,0 +1,85 @@
+@model IEnumerable<PetViewModel>
+@{
+    ViewData["Title"] = "My Pets";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2><i class="bi bi-list-ul me-2"></i>My Pets</h2>
+        <p class="text-muted mb-0">Manage all your registered pets</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-2"></i>Add New Pet
+    </a>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    <div class="row g-4">
+        @foreach (var pet in Model)
+        {
+            <div class="col-md-4">
+                <div class="card h-100">
+                    @if (!string.IsNullOrEmpty(pet.ProfileImageUrl))
+                    {
+                        <img src="@pet.ProfileImageUrl" class="pet-card-img" alt="@pet.Name">
+                    }
+                    else
+                    {
+                        <div class="pet-card-img bg-light d-flex align-items-center justify-content-center">
+                            <i class="bi bi-image text-muted" style="font-size: 4rem;"></i>
+                        </div>
+                    }
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title mb-0">@pet.Name</h5>
+                            <span class="badge @(pet.Status == "Active" ? "badge-status-active" : "badge-status-inactive")">
+                                @pet.Status
+                            </span>
+                        </div>
+                        <p class="card-text">
+                            <span class="badge badge-species me-1">@pet.Species</span>
+                            @if (!string.IsNullOrEmpty(pet.Breed))
+                            {
+                                <small class="text-muted">@pet.Breed</small>
+                            }
+                        </p>
+                        <p class="card-text small text-muted">
+                            <i class="bi bi-calendar me-1"></i>@pet.Age years old
+                            @if (pet.WeightKg.HasValue)
+                            {
+                                <span class="ms-2"><i class="bi bi-speedometer2 me-1"></i>@pet.WeightKg.Value kg</span>
+                            }
+                        </p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <div class="btn-group w-100" role="group">
+                            <a asp-action="Details" asp-route-id="@pet.Id" class="btn btn-outline-primary">
+                                <i class="bi bi-eye me-1"></i>View
+                            </a>
+                            <a asp-action="Edit" asp-route-id="@pet.Id" class="btn btn-outline-secondary">
+                                <i class="bi bi-pencil me-1"></i>Edit
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@pet.Id" class="btn btn-outline-danger">
+                                <i class="bi bi-trash me-1"></i>Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="card text-center p-5">
+        <div class="card-body">
+            <i class="bi bi-emoji-frown display-1 text-muted"></i>
+            <h4 class="mt-3">No pets found</h4>
+            <p class="text-muted">You haven't added any pets yet. Start by adding your first pet!</p>
+            <a asp-action="Create" class="btn btn-primary mt-2">
+                <i class="bi bi-plus-circle me-2"></i>Add Your First Pet
+            </a>
+        </div>
+    </div>
+}

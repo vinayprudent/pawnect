@@ -1,0 +1,25 @@
+@model BookingConfirmViewModel
+@{
+    ViewData["Title"] = "Booking confirmed";
+}
+
+<div class="confirmation-page text-center">
+    <div class="card mx-auto" style="max-width: 480px;">
+        <div class="card-body p-4">
+            <div class="rounded-circle bg-success bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width:64px;height:64px;">
+                <i class="bi bi-check-lg text-success" style="font-size: 2rem;"></i>
+            </div>
+            <h4 class="mb-2">Booking confirmed</h4>
+            <p class="text-muted small mb-4">Booking ID: <strong>@Model.BookingId</strong></p>
+            <div class="text-start border rounded p-3 mb-3">
+                <p class="mb-1"><strong>Vet:</strong> @Model.VetName</p>
+                <p class="mb-1"><strong>Clinic:</strong> @Model.ClinicName</p>
+                <p class="mb-1"><strong>Address:</strong> @Model.ClinicAddress</p>
+                <p class="mb-1"><strong>Date & time:</strong> @Model.SlotDate @Model.SlotTime</p>
+                <p class="mb-0"><strong>Pet:</strong> @Model.PetName</p>
+            </div>
+            <p class="small text-muted">Payment is placeholder for this demo.</p>
+            <a asp-controller="Appointments" asp-action="Index" class="btn btn-pawnect">View upcoming appointments</a>
+        </div>
+    </div>
+</div>

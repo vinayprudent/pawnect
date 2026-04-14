@@ -1,0 +1,293 @@
+@model ConsultationDetailsViewModel
+@{
+    ViewData["Title"] = $"Consultation - {Model?.PetName}";
+}
+
+@if (Model != null)
+{
+    <div class="consultation-details-page">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-action="Index">My Consultations</a></li>
+                <li class="breadcrumb-item active">@Model.PetName · @Model.SlotDate</li>
+            </ol>
+        </nav>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0"><i class="bi bi-clipboard2-pulse me-2"></i>Consultation Details</h2>
+            <span class="badge consult-status-badge-lg">@Model.ConsultStatus</span>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Pet & parent details -->
+                <section class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-heart me-2"></i>Pet & parent details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-muted small text-uppercase mb-2">Pet</h6>
+                                <p class="mb-1 fw-medium">@Model.PetName</p>
+                                <p class="small text-muted mb-0">@Model.PetSpecies @(Model.PetBreed != null ? $" · {Model.PetBreed}" : "") @(Model.PetWeightKg.HasValue ? $" · {Model.PetWeightKg} kg" : "")</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted small text-uppercase mb-2">Pet parent</h6>
+                                <p class="mb-1">@(Model.ParentName ?? "—")</p>
+                                <p class="small text-muted mb-0">@(Model.ParentEmail ?? "—") @(Model.ParentPhone != null ? $" · {Model.ParentPhone}" : "")</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Reason for visit -->
+                <section class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-chat-left-text me-2"></i>Reason for visit</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-0">@(Model.ReasonForVisit ?? "—")</p>
+                    </div>
+                </section>
+
+                <!-- Previous consults -->
+                @if (Model.PreviousConsults != null && Model.PreviousConsults.Any())
+                {
+                    <section class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Previous consults</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                @foreach (var c in Model.PreviousConsults)
+                                {
+                                    <li class="list-group-item px-0">
+                                        <strong>@c.Date</strong> · @c.VetName<br />
+                                        <span class="text-muted small">@c.Summary</span>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </section>
+                }
+
+                <!-- Vitals (Vet added) -->
+                @if (Model.Vitals != null && Model.Vitals.Any())
+                {
+                    <section class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-speedometer2 me-2"></i>Vitals</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-2">
+                                @foreach (var v in Model.Vitals)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="border rounded p-2">
+                                            <span class="text-muted small">@v.Name</span>
+                                            <div>@v.Value @(v.Unit ?? "")</div>
+                                            @if (v.RecordedAt != null) { <span class="small text-muted">@v.RecordedAt</span> }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </section>
+                }
+
+                <!-- Notes (Vet added) -->
+                @if (!string.IsNullOrWhiteSpace(Model.Notes))
+                {
+                    <section class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-journal-text me-2"></i>Notes</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-0">@Model.Notes</p>
+                        </div>
+                    </section>
+                }
+
+                <!-- Provisional diagnosis (Vet added) -->
+                @if (!string.IsNullOrWhiteSpace(Model.ProvisionalDiagnosis))
+                {
+                    <section class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-clipboard2-pulse me-2"></i>Provisional diagnosis</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-0">@Model.ProvisionalDiagnosis</p>
+                        </div>
+                    </section>
+                }
+
+                <!-- Prescription (Vet uploaded) -->
+                @if (!string.IsNullOrWhiteSpace(Model.PrescriptionFileName) || !string.IsNullOrWhiteSpace(Model.PrescriptionUrl))
+                {
+                    <section class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-file-earmark-medical me-2"></i>Prescription</h5>
+                        </div>
+                        <div class="card-body">
+                            @if (!string.IsNullOrWhiteSpace(Model.PrescriptionUrl))
+                            {
+                                <a href="@Model.PrescriptionUrl" target="_blank" rel="noopener" class="btn btn-outline-pawnect btn-sm">
+                                    <i class="bi bi-download me-1"></i>@(Model.PrescriptionFileName ?? "Download prescription")
+                                </a>
+                            }
+                            else
+                            {
+                                <p class="mb-0 text-muted">@Model.PrescriptionFileName (uploaded by vet)</p>
+                            }
+                        </div>
+                    </section>
+                }
+
+                <!-- Next actions (reflected from vet) -->
+                @if (Model.ConsultationComplete || Model.DiagnosticsRecommended)
+                {
+                    <section class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-check2-square me-2"></i>Next actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="mb-0">
+                                @if (Model.ConsultationComplete) { <li>Consultation complete</li> }
+                                @if (Model.DiagnosticsRecommended) { <li>Diagnostics recommended (see below)</li> }
+                            </ul>
+                        </div>
+                    </section>
+                }
+
+                <!-- C. Diagnostics — In-Clinic -->
+                @if (Model.DiagnosticOrder != null)
+                {
+                    var dx = Model.DiagnosticOrder;
+                    <section class="card mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="bi bi-droplet me-2"></i>Diagnostics — In-Clinic</h5>
+                            <span class="badge diagnostic-status-badge">@dx.Status</span>
+                        </div>
+                        <div class="card-body">
+                            <p class="small text-muted mb-2">Order ID: @dx.OrderId · Collection: @dx.CollectionType</p>
+                            <p class="mb-2"><strong>Tests ordered:</strong> @string.Join(", ", dx.TestsOrdered)</p>
+                            <p class="mb-2"><strong>Single price:</strong> @dx.TotalPrice.ToString("C")</p>
+                            <p class="mb-2"><strong>Assigned lab:</strong> @(dx.AssignedLab ?? "—")</p>
+                            @if (dx.OrderedAt != null) { <p class="small text-muted mb-0">Ordered: @dx.OrderedAt</p> }
+                            @if (dx.SampleCollectedAt != null) { <p class="small text-muted mb-0">Sample collected: @dx.SampleCollectedAt</p> }
+                            @if (dx.ReportUploadedAt != null) { <p class="small text-muted mb-0">Report uploaded: @dx.ReportUploadedAt</p> }
+                        </div>
+                    </section>
+                }
+
+                <!-- E. Report flow -->
+                @if (Model.Report != null)
+                {
+                    var rpt = Model.Report;
+                    <section class="card mb-4 border-teal">
+                        <div class="card-header bg-teal-light">
+                            <h5 class="mb-0"><i class="bi bi-file-earmark-bar-graph me-2"></i>Report & advice</h5>
+                            @if (rpt.ReviewedAt != null) { <span class="small text-muted">Reviewed @rpt.ReviewedAt</span> }
+                        </div>
+                        <div class="card-body">
+                            @if (!string.IsNullOrWhiteSpace(rpt.ReportUrl))
+                            {
+                                <p class="mb-2">
+                                    <a href="@rpt.ReportUrl" target="_blank" rel="noopener" class="btn btn-outline-pawnect btn-sm">
+                                        <i class="bi bi-download me-1"></i>@(rpt.ReportFileName ?? "View report")
+                                    </a>
+                                </p>
+                            }
+                            else if (!string.IsNullOrWhiteSpace(rpt.ReportFileName))
+                            {
+                                <p class="mb-2 text-muted">Report: @rpt.ReportFileName</p>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(rpt.VetAdvice))
+                            {
+                                <p class="mb-2"><strong>Vet advice:</strong><br />@rpt.VetAdvice</p>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(rpt.NextSteps))
+                            {
+                                <p class="mb-0"><strong>Next steps:</strong><br />@rpt.NextSteps</p>
+                            }
+                        </div>
+                    </section>
+                }
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card sticky-top">
+                    <div class="card-header">Visit info</div>
+                    <div class="card-body">
+                        <p class="mb-1"><strong>@Model.VetName</strong></p>
+                        <p class="small text-muted mb-1">@Model.ClinicName</p>
+                        <p class="small mb-2">@Model.ClinicAddress</p>
+                        <p class="small mb-0"><i class="bi bi-calendar3 me-1"></i>@Model.SlotDate @Model.SlotTime</p>
+                        <p class="small mb-0"><span class="badge consult-status-badge mt-2">@Model.ConsultStatus</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.VetId.HasValue && (Model.ConsultStatus == ConsultStatus.Completed || Model.ConsultStatus == ConsultStatus.Closed))
+        {
+            <section class="card mb-4 border-teal">
+                <div class="card-header bg-teal-light">
+                    <h5 class="mb-0"><i class="bi bi-star me-2"></i>Rate this vet</h5>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.HasRatedVet == true)
+                    {
+                        <p class="text-muted mb-0">You have rated this visit. Thank you.</p>
+                    }
+                    else
+                    {
+                        <form asp-action="RateVet" method="post" class="row g-2">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="bookingId" value="@Model.BookingId" />
+                            <input type="hidden" name="vetId" value="@Model.VetId" />
+                            <div class="col-12">
+                                <label class="form-label">Your rating (1–5 stars)</label>
+                                <select name="rating" class="form-select" style="max-width:120px;" required>
+                                    <option value="5">5 – Excellent</option>
+                                    <option value="4">4 – Good</option>
+                                    <option value="3">3 – Okay</option>
+                                    <option value="2">2 – Below average</option>
+                                    <option value="1">1 – Poor</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Comment (optional)</label>
+                                <textarea name="comment" class="form-control" rows="2" placeholder="How was your experience?"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-pawnect">Submit rating</button>
+                            </div>
+                        </form>
+                    }
+                </div>
+            </section>
+        }
+
+        <div class="mt-4">
+            <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-2"></i>Back to My Consultations</a>
+            @if (Model.BookingId != "BK-DEMO")
+            {
+                <a asp-controller="Appointments" asp-action="Index" class="btn btn-outline-pawnect ms-2">My Appointments</a>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning"><i class="bi bi-exclamation-triangle me-2"></i>Consultation not found.</div>
+}
+
+<style>
+    .consult-status-badge { font-size: 0.75rem; }
+    .consult-status-badge-lg { font-size: 0.9rem; padding: 0.35em 0.65em; }
+    .diagnostic-status-badge { font-size: 0.75rem; }
+    .bg-teal-light { background: rgba(22, 122, 119, 0.08); }
+    .border-teal { border-color: var(--teal) !important; }
+</style>

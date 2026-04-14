@@ -1,0 +1,64 @@
+@model List<LabViewModel>
+@{
+    ViewData["Title"] = "Find Labs";
+    var search = ViewBag.Search as string;
+}
+<div class="lab-search-page">
+    <h2 class="mb-3"><i class="bi bi-droplet me-2"></i>Find Labs</h2>
+    <p class="text-muted small mb-3">Registered laboratories appear here. No dummy data.</p>
+
+    <div class="row">
+        <aside class="col-lg-3 mb-4">
+            <div class="card filter-card-pawnect">
+                <div class="card-header bg-transparent border-bottom"><strong>Search</strong></div>
+                <div class="card-body">
+                    <form method="get" asp-action="Index">
+                        <div class="mb-3">
+                            <label class="form-label small">Name or location</label>
+                            <input type="text" name="search" class="form-control form-control-sm" value="@search" placeholder="Lab name, contact, or city" />
+                        </div>
+                        <button type="submit" class="btn btn-pawnect btn-sm w-100">Apply</button>
+                    </form>
+                </div>
+            </div>
+        </aside>
+        <div class="col-lg-9">
+            <p class="text-muted small mb-3">@Model.Count lab(s) found</p>
+            <div class="lab-list">
+                @foreach (var lab in Model)
+                {
+                    <div class="card vet-card-pawnect mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <div class="vet-avatar rounded-circle bg-teal bg-opacity-10 d-flex align-items-center justify-content-center text-teal fw-bold" style="width:56px;height:56px;"><i class="bi bi-droplet"></i></div>
+                                </div>
+                                <div class="col">
+                                    <h5 class="card-title mb-1">@lab.LabName</h5>
+                                    <p class="card-text small text-muted mb-1">Contact: @lab.Name</p>
+                                    <p class="card-text small mb-1">@lab.Email @(lab.PhoneNumber != null ? " · " + lab.PhoneNumber : "")</p>
+                                    @if (!string.IsNullOrWhiteSpace(lab.LocationDisplay))
+                                    {
+                                        <p class="card-text small mb-0">@lab.LocationDisplay</p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            @if (!Model.Any())
+            {
+                <div class="card text-center py-5">
+                    <p class="text-muted mb-0">No labs found. Try a different search or check back later—labs register via the admin portal.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<style>
+    .filter-card-pawnect { border-radius: 14px; border: 1px solid var(--border); }
+    .vet-card-pawnect { border-radius: 12px; border: 1px solid var(--border); }
+    .bg-teal { background-color: var(--teal); }
+    .text-teal { color: var(--teal); }
+</style>

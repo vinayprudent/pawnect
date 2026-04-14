@@ -1,0 +1,51 @@
+@model LabOrderReviewViewModel
+@{
+    ViewData["Title"] = "Review & confirm";
+}
+
+<div class="lab-review-page">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Lab tests</a></li>
+            <li class="breadcrumb-item"><a asp-action="SelectTestType">Select test</a></li>
+            <li class="breadcrumb-item"><a asp-action="SelectPetAndCollection" asp-route-testId="@Model.TestId" asp-route-testType="@Model.TestType">Pet & collection</a></li>
+            <li class="breadcrumb-item active">Review</li>
+        </ol>
+    </nav>
+    <h2 class="mb-4">Review &amp; confirm</h2>
+
+    <div class="card mb-3">
+        <div class="card-header">Order summary</div>
+        <div class="card-body">
+            <p class="mb-1"><strong>Test:</strong> @Model.TestDisplayName</p>
+            <p class="mb-1"><strong>Pet:</strong> @Model.PetName</p>
+            <p class="mb-1"><strong>Collection:</strong> @Model.CollectionTypeDisplay</p>
+            <p class="mb-1"><strong>Sample:</strong> @Model.SampleType</p>
+            <p class="mb-0"><strong>Amount:</strong> ₹@Model.Price.ToString("N0")</p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <p class="small text-muted mb-2">Lab assignment: PawNect assigns the lab internally. You do not need to select a lab.</p>
+            <p class="small text-muted mb-0">Payment: placeholder for this demo. In production, payment gateway would appear here.</p>
+        </div>
+    </div>
+
+    <form asp-action="ReviewConfirm" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="TestId" />
+        <input type="hidden" asp-for="TestType" />
+        <input type="hidden" asp-for="TestDisplayName" />
+        <input type="hidden" asp-for="Price" />
+        <input type="hidden" asp-for="SampleType" />
+        <input type="hidden" asp-for="PetName" />
+        <input type="hidden" asp-for="PetId" />
+        <input type="hidden" asp-for="CollectionType" />
+        <button type="submit" class="btn btn-pawnect btn-lg">Place order (placeholder payment)</button>
+    </form>
+
+    <div class="mt-3">
+        <a asp-action="SelectPetAndCollection" asp-route-testId="@Model.TestId" asp-route-testType="@Model.TestType" class="btn btn-outline-secondary btn-sm">Back</a>
+    </div>
+</div>

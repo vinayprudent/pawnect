@@ -1,0 +1,123 @@
+@model List<VetViewModel>
+@using PawNect.PetParent.Web.Models
+@{
+    var consultMode = ViewBag.ConsultMode as string ?? ConsultMode.InClinic;
+    var isOnline = consultMode == ConsultMode.Online;
+    ViewData["Title"] = isOnline ? "Online Consultation – Find Vets" : "Find Vets";
+    var search = ViewBag.Search as string;
+    var sortBy = ViewBag.SortBy as string ?? "clinic";
+    var sortDesc = ViewBag.SortDesc as bool? ?? false;
+}
+
+<div class="vet-search-page">
+    <h2 class="mb-3">
+        @if (isOnline)
+        {<i class="bi bi-camera-video me-2"></i><text>Online Consultation</text>}
+        else
+        {<i class="bi bi-search me-2"></i><text>Search & Discover Vets</text>}
+    </h2>
+    <p class="text-muted small mb-3">@(isOnline ? "Book a video consultation with a verified vet. Same vets, online slots." : "Registered veterinary clinics appear here. No dummy data.")</p>
+
+    <div class="row">
+        <aside class="col-lg-3 mb-4">
+            <div class="card filter-card-pawnect">
+                <div class="card-header bg-transparent border-bottom"><strong>Search</strong></div>
+                <div class="card-body">
+                    <form method="get" asp-action="Index">
+                        <input type="hidden" name="mode" value="@consultMode" />
+                        <div class="mb-3">
+                            <label class="form-label small">Name or location</label>
+                            <input type="text" name="search" class="form-control form-control-sm" value="@search" placeholder="Clinic name, contact, or city" />
+                        </div>
+                        <input type="hidden" name="sortBy" value="@sortBy" />
+                        <input type="hidden" name="sortDesc" value="@sortDesc" />
+                        <button type="submit" class="btn btn-pawnect btn-sm w-100">Apply</button>
+                    </form>
+                </div>
+            </div>
+        </aside>
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <span class="text-muted small">@Model.Count vet(s) found</span>
+                <div class="sort-pills">
+                    <span class="small text-muted me-2">Sort by:</span>
+                    <a asp-action="Index" asp-route-search="@search" asp-route-mode="@consultMode" asp-route-sortBy="name" asp-route-sortDesc="false" class="badge @(sortBy == "name" && !sortDesc ? "bg-teal" : "bg-light text-dark") text-decoration-none me-1">Name ↑</a>
+                    <a asp-action="Index" asp-route-search="@search" asp-route-mode="@consultMode" asp-route-sortBy="name" asp-route-sortDesc="true" class="badge @(sortBy == "name" && sortDesc ? "bg-teal" : "bg-light text-dark") text-decoration-none me-1">Name ↓</a>
+                    <a asp-action="Index" asp-route-search="@search" asp-route-mode="@consultMode" asp-route-sortBy="clinic" asp-route-sortDesc="false" class="badge @(sortBy == "clinic" && !sortDesc ? "bg-teal" : "bg-light text-dark") text-decoration-none me-1">Clinic ↑</a>
+                    <a asp-action="Index" asp-route-search="@search" asp-route-mode="@consultMode" asp-route-sortBy="clinic" asp-route-sortDesc="true" class="badge @(sortBy == "clinic" && sortDesc ? "bg-teal" : "bg-light text-dark") text-decoration-none me-1">Clinic ↓</a>
+                    @if (isOnline)
+                    {
+                        <a asp-action="Index" asp-route-search="@search" asp-route-mode="@consultMode" asp-route-sortBy="rating" asp-route-sortDesc="false" class="badge @(sortBy == "rating" && !sortDesc ? "bg-teal" : "bg-light text-dark") text-decoration-none me-1">Rating ↑</a>
+                        <a asp-action="Index" asp-route-search="@search" asp-route-mode="@consultMode" asp-route-sortBy="fee" asp-route-sortDesc="false" class="badge @(sortBy == "fee" && !sortDesc ? "bg-teal" : "bg-light text-dark") text-decoration-none me-1">Fee ↑</a>
+                        <a asp-action="Index" asp-route-search="@search" asp-route-mode="@consultMode" asp-route-sortBy="fee" asp-route-sortDesc="true" class="badge @(sortBy == "fee" && sortDesc ? "bg-teal" : "bg-light text-dark") text-decoration-none me-1">Fee ↓</a>
+                        <a asp-action="Index" asp-route-search="@search" asp-route-mode="@consultMode" asp-route-sortBy="experience" asp-route-sortDesc="true" class="badge @(sortBy == "experience" && sortDesc ? "bg-teal" : "bg-light text-dark") text-decoration-none">Experience ↓</a>
+                    }
+                </div>
+            </div>
+            <div class="vet-list">
+                @foreach (var vet in Model)
+                {
+                    <div class="card vet-card-pawnect mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    @if (!string.IsNullOrEmpty(vet.PhotoUrl))
+                                    {
+                                        <img src="@vet.PhotoUrl" alt="@vet.Name" class="vet-avatar rounded-circle" style="width:56px;height:56px;object-fit:cover;" />
+                                    }
+                                    else
+                                    {
+                                        <div class="vet-avatar rounded-circle bg-teal bg-opacity-10 d-flex align-items-center justify-content-center text-teal fw-bold" style="width:56px;height:56px;">@(vet.Name.Length > 0 ? vet.Name[0] : '?')</div>
+                                    }
+                                </div>
+                                <div class="col">
+                                    <h5 class="card-title mb-1">@vet.Name</h5>
+                                    <p class="card-text small text-muted mb-1">@vet.Specialization @(string.IsNullOrEmpty(vet.Degree) ? "" : " · " + vet.Degree)</p>
+                                    <p class="card-text small mb-1">@vet.ClinicName, @vet.ClinicLocation</p>
+                                    <p class="card-text small mb-1">
+                                        @if (vet.Rating > 0)
+                                        {
+                                            <span class="text-warning"><i class="bi bi-star-fill"></i> @vet.Rating.ToString("F1")</span>
+                                            if (vet.ExperienceYears > 0) { <span class="text-muted"> · @vet.ExperienceYears years experience</span> }
+                                        }
+                                        else if (vet.ExperienceYears > 0)
+                                        {
+                                            <span class="text-muted">@vet.ExperienceYears years experience</span>
+                                        }
+                                    </p>
+                                    <p class="card-text small mb-0">
+                                        <span class="badge bg-secondary">@vet.AvailabilityIndicator</span>
+                                    </p>
+                                </div>
+                                <div class="col-auto">
+                                    @if (isOnline)
+                                    {
+                                        <a asp-action="Details" asp-route-id="@vet.Id" asp-route-mode="@ConsultMode.Online" class="btn btn-pawnect btn-sm">Book Online Consultation</a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-action="Details" asp-route-id="@vet.Id" class="btn btn-pawnect btn-sm">Book In-Clinic Appointment</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            @if (!Model.Any())
+            {
+                <div class="card text-center py-5">
+                    <p class="text-muted mb-0">No vets found. Try a different search or check back later—clinics register via the admin portal.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .filter-card-pawnect { border-radius: 14px; border: 1px solid var(--border); }
+    .vet-card-pawnect { border-radius: 12px; border: 1px solid var(--border); transition: box-shadow 0.2s; }
+    .vet-card-pawnect:hover { box-shadow: 0 6px 16px rgba(22,122,119,0.15); }
+    .bg-teal { background-color: var(--teal); }
+    .text-teal { color: var(--teal); }
+</style>
