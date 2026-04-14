@@ -52,8 +52,8 @@ artifacts/
 **/appsettings.*.local.json
 **/secrets.json
 
-# Azure
-deploy/publish/
+# Azure (local publish output from deploy-azure.ps1)
+Project/deploy/publish/
 
 # Local scratch build output
 .tmp-build/
